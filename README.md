@@ -150,7 +150,7 @@ The system could also be improved by accepting additional parameters for data su
 Incorporating larger patient demographic datasets would further enhance the analysis by uncovering trends related to factors like age, day of the week, or medical condition severity. These insights could help hospitals tailor scheduling strategies to different patient groups for better efficiency and care outcomes.
 
 Finally, the dashboard could be expanded to include interactive filters, customizable alerts, and exportable performance reports. This would create a more dynamic and actionable interface for hospital management, enabling data-driven decisions and continuous improvement in caregiver responsiveness. 
-Automated Data Cleaning and Validation
+
 
 
 ## 📜 References
