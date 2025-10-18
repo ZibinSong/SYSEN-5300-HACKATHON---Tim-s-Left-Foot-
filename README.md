@@ -63,12 +63,12 @@ stuff - delete later
 ## ⚙️ Methodology / Approach
 When a patient checks in, their basic information and demographics will be recorded. They will also be assigned a severity level based on the Emergency Severity Index (ESI) system which is the triage system used in the U.S. to categorize and prioritize patients based on their level of emergency and current condition. Hospitals will be able to determine how frequently each patient will be checked in on (e.g. every 2 hours, every 30 minutes). 
 
-*Note: Severity Level 1 requires constant monitoring of patients and is therefore excluded from our datasets.
+- *Note: Severity Level 1 requires constant monitoring of patients and is therefore excluded from our datasets.
 
 
 Caregivers (e.g. nurses and doctors) will have unique IDs that can scan into a patient's room which will log the date, time, employee, patient, and room at the time of each scan. For every patient visit (aka, check-in), the caregiver will scan into the room. By collecting this data, our tool will evaluate the actual time interval between caregiver check-ins for each patient and compare it to the expected frequency determined at the time of the patient's initial check-in. This comparison, represented by the difference between the actual and expected time interval, would ideally result in a value of 0 which means the actual time interval is the same as the expected time interval.
 
-*Note: If a caregiver visits a patient early (where the actual time interval is less than the expected time interval), then there is no lateness and the difference between the actual and expected time will be considered to be 0. 
+- *Note: If a caregiver visits a patient early (where the actual time interval is less than the expected time interval), then there is no lateness and the difference between the actual and expected time will be considered to be 0. 
 
 
 ~~~mermaid
