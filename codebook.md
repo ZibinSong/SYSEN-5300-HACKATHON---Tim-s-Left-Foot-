@@ -24,10 +24,10 @@ Variables:
 
 
 Input:
-| File                                                                             | Purpose                                                        | Key Columns                                                                          |
-| -------------------------------------------------------------------------------- | ----------------------------------- --------------------- | ------------------------------------------------------------------------------------ |
-| **Patient Intake CSV**<br>`Dataset_Locked_UCSF – Patient Intake.csv`             | Patient admission and severity info                              | `Patient_ID`, `Room_Number`, `Severity` (or look-alikes), `Date`, `Days` (default 3) |
-| **Employee Information CSV**<br>`Dataset_Locked_UCSF – Employee Information.csv` | Nurse/employee roster with shifts    (fallback = synthetic IDs) | `Employee_ID`, `Time In`, `Time Out`, optional `Shift/Code` (`M/D/N`)                |
+| File                                                                             | Purpose                             | Key Columns                                                                          |
+| -------------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
+| **Patient Intake CSV**<br>`Dataset_Locked_UCSF – Patient Intake.csv`             | Patient admission and severity info | `Patient_ID`, `Room_Number`, `Severity` (or look-alikes), `Date`, `Days` (default 3) |
+| **Employee Information CSV**<br>`Dataset_Locked_UCSF – Employee Information.csv` | Nurse/employee roster with shifts   | `Employee_ID`, `Time In`, `Time Out`, optional `Shift/Code` (`M/D/N`)                |
 | **Outputs**                                                                      | Generated visit dataset             | —                                      | `patient_visits.csv`, `patient_visits.zip`                                           |
 
 Parameters:
@@ -38,6 +38,7 @@ Parameters:
 | **JITTER_MEAN_FRACTION** | Mean = 50 % of range (≈ 6 min if allow = 12).                                                                                |
 | **JITTER_SD_FRACTION**   | SD = 25 % of range (≈ 3 min if allow = 12).                                                                                  |
 | **Shift Buckets**        | `"0_8"` (00–07:59), `"8_16"` (08–15:59), `"16_24"` (16–23:59). Employees sampled from matching bucket or `all_ids` fallback. |
+
 
 Functions:
 | Function                                                                | Purpose                                                                            |     |                                                         |
@@ -50,8 +51,9 @@ Functions:
 | **get_employee_roster_from_csv(employee_csv)**                          | Build bucketed Employee ID lists from Time In/Out (uses synthetic IDs if missing). |     |                                                         |
 | **rtrunc_minutes(n, allow_max_min, mean_frac, sd_frac)**                | Draw positive delay minutes from a truncated normal distribution.                  |     |                                                         |
 | **make_schedule_plus_u12(start_dt, end_dt, target_min, allow_max_min)** | Generate visit timestamps (start → end) with randomized jitter.                    |     |                                                         |
+| **%                                                                     |                                                                                    | %** | Null-or operator (returns `b` if `a` is missing/empty). |
 | **pick(aliases, pool)**                                                 | Select first matching column alias.                                                |     |                                                         |
-| **.sample_emp(bucket)**                                                 | Sample an `Employee_ID` from the bucket-specific roster.                           |     |      
+| **.sample_emp(bucket)**                                                 | Sample an `Employee_ID` from the bucket-specific roster.                           |     |                                                         |
 
 Output:
 | Column              | Description                                  |
