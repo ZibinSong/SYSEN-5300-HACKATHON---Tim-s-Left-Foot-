@@ -57,7 +57,9 @@ When a patient checks in, their basic information and demographics will be recor
 
 
 Caregivers (e.g. nurses and doctors) will have unique IDs that can scan into a patient's room which will log the date, time, employee, patient, and room at the time of each scan. For every patient visit (aka, check-in), the caregiver will scan into the room. By collecting this data, our tool will evaluate the actual time interval between caregiver check-ins for each patient and compare it to the expected frequency determined at the time of the patient's initial check-in. This comparison, represented by the difference between the actual and expected time interval, would ideally result in a value of 0 which means the actual time interval is the same as the expected time interval.
+
 *Note: If a caregiver visits a patient early (where the actual time interval is less than the expected time interval), then there is no lateness and the difference between the actual and expected time will be considered to be 0. 
+
 
 Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for the hospital to review and address.  
 
