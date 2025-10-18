@@ -1,3 +1,11 @@
+# SigmaView — Minimal Working Dashboard (Clean + Launchable)
+# ----------------------------------------------------------
+# If your current app opens a blank page, start from this clean MWE.
+# 1) Restart R session. 2) Install packages once:
+# install.packages(c("shiny","shinydashboard","plotly","DT","dplyr","tidyr","stringr","lubridate","readr"), dependencies = TRUE)
+# 3) Save this as app.R and run: shiny::runApp()
+
+# ---------------- Packages ----------------
 library(shiny)
 library(shinydashboard)
 library(plotly)
@@ -8,648 +16,277 @@ library(stringr)
 library(lubridate)
 library(readr)
 
-# --------- Switch: demo vs. your files ---------
-USE_DEMO <- FALSE   # <- using your provided CSVs below
-# Your four files:
+# ---------------- Paths (your 4 files) ----------------
 UCSF_PATIENT_CSV   <- "/cloud/project/Dataset_Locked_UCSF - Patient Intake.csv"
 UCSF_EMP_CSV       <- "/cloud/project/Dataset_Locked_UCSF - Employee Information.csv"
 MED_PATIENT_CSV    <- "/cloud/project/Dataset_MediumSized_Locked - Patient Intake.csv"
 MED_EMP_CSV        <- "/cloud/project/Dataset_MediumSized_Locked - Employee Information.csv"
 
-# Not using a separate exceptions CSV; we will derive a lightweight "exceptions" set from out-of-control points.
+# ---------------- Load + Normalize ----------------
+load_data <- function(){
+  u_patient <- suppressWarnings(read_csv(UCSF_PATIENT_CSV, show_col_types = FALSE))
+  u_emp     <- suppressWarnings(read_csv(UCSF_EMP_CSV,     show_col_types = FALSE))
+  m_patient <- suppressWarnings(read_csv(MED_PATIENT_CSV,  show_col_types = FALSE))
+  m_emp     <- suppressWarnings(read_csv(MED_EMP_CSV,      show_col_types = FALSE))
 
-# --------- (Optional) Demo Data Generator (kept for fallback) ---------
-make_demo <- function(n_days = 60, seed = 42){
-  set.seed(seed)
-  dates <- seq(today()-days(n_days-1), today(), by = "day")
-  wings <- c("SW","MW","MATW","RW")
-  severities <- c("Low","Medium","High","Critical")
-  genders <- c("Male","Female","Other")
-  tod <- c("morning","afternoon","evening","night")
-  
-  visits <- tidyr::crossing(date = dates, time_of_day = tod, wing = wings) |>
-    mutate(
-      severity = sample(severities, n(), TRUE, prob = c(.4,.35,.2,.05)),
-      caregiver_gender = sample(genders, n(), TRUE, prob = c(.35,.6,.05)),
-      deviation = rnorm(n(), 2.3, 1.8)
+  clean_names <- function(df){
+    names(df) <- names(df) |>
+      tolower() |>
+      gsub("[^a-z0-9]+","_", x=_) |>
+      gsub("(^_|_$)", "", x=_, perl=TRUE)
+    df
+  }
+  u_patient <- clean_names(u_patient); u_emp <- clean_names(u_emp)
+  m_patient <- clean_names(m_patient); m_emp <- clean_names(m_emp)
+
+  find_col <- function(df, candidates){
+    hits <- intersect(candidates, names(df)); if(length(hits)) hits[1] else NULL
+  }
+
+  # Map patient files to normalized schema (with 3-shift + severity 1-5)
+  normalize_patient <- function(pat, emp, label){
+    emp_id_col <- find_col(emp, c("employee_id","employeeid","id","caregiver_id"))
+    gender_col <- find_col(emp, c("gender","caregiver_gender","sex"))
+    wing_col_e <- find_col(emp, c("wing","department","unit"))
+
+    emp_min <- emp |>
+      mutate(across(all_of(emp_id_col), as.character)) |>
+      transmute(
+        employee_id = .data[[emp_id_col]],
+        caregiver_gender = if(!is.null(gender_col)) str_to_title(as.character(.data[[gender_col]])) else NA_character_,
+        wing_emp = if(!is.null(wing_col_e)) as.character(.data[[wing_col_e]]) else NA_character_
+      ) |>
+      distinct()
+
+    date_col  <- find_col(pat, c("date","visit_date","service_date"))
+    tin_col   <- find_col(pat, c("time_in","start_time","checkin_time","arrival_time"))
+    sev_col   <- find_col(pat, c("severity","sev","acuity","severity_score"))
+    wing_col  <- find_col(pat, c("wing","unit","department"))
+    eid_col   <- find_col(pat, c("employee_id","employeeid","caregiver_id","nurse_id"))
+    dev_col   <- find_col(pat, c("deviation","lateness","delay_min","delta_min"))
+
+    pat2 <- pat
+    pat2$date <- if(!is.null(date_col)) as.Date(pat2[[date_shift if(!is.null(tin_col)) as.Date(pat2[[tin_col]]) else as.Date(NA)
+
+    # derive 3-shift from time if present: morning [06:00-14:00), day [14:00-22:00), night [22:00-06:00)
+    if(!is.null(tin_col))shift <- hour(suppressWarnings(parse_date_time(pat2[[tin_col]], orders = c("ymd HMS","ymd HM","ymd H","HMS","HM","H"), quiet=TRUE)))
+      pat2$shift <- case_when(
+        hrs >= 6  & hrs < 14 ~ "morning",
+   shift 14 & hrs < 22 ~ "day",
+        hrs >= 22 | hrs < 6  ~ "night",
+        TRUE                 ~ NA_character_
+      )
+    } else pat2$shift <- NA_character_
+
+    if(!is.null(eid_col)){
+      pat2$employee_id <- as.character(pat2[[eid_col]])
+      pat2 <- left_join(pat2, emp_min, by = "employee_id")
+    } else {
+      pat2$caregiver_gender <- NA_character_
+      pat2$wing_emp <- NA_character_
+    }
+
+    pat2$wing <- if(!is.null(wing_col)) as.character(pat2[[wing_col]]) else pat2$wing_emp
+
+    # severity as numeric 1-5 if possible
+    if(!is.null(sev_col)){
+      sraw <- pat2[[sev_col]]
+      snum <- suppressWarnings(as.integer(sraw))
+      if(all(is.na(snum))){
+        # try to map text levels like Low..Critical → 1..5
+        map <- c("low"=1, "medium"=3, "high"=4, "critical"=5)
+        snum <- unname(map[tolower(as.character(sraw))]);
+      }
+      pat2$severity <- pmin(pmax(snum,1),5)
+    } else pat2$severity <- NA_integershiftis.null(dev_col)){
+      pat2shift<- suppressWarnings(as.numeric(pat2[[dev_col]]))
+    } else {
+      t_act <- find_col(pat2, c("t_actual","actual_time_min","service_time_min"))
+      t_tgt <- find_col(pat2, c("t_target","target_time_min","expected_time_min"))
+      pat2$deviation <- if(!is.null(t_act) && !is.null(t_tgt)) as.numeric(pat2[[t_act]]) - as.numeric(pat2[[t_tgt]]) else NA_real_
+    }
+
+    tibble(
+      source = label,
+      date = pat2$date,
+      shift = tolower(as.character(pat2$shift)),
+      wing = as.character(pat2$wing),
+      severity = as.integer(pat2$severity),
+      caregiver_gender = str_to_title(as.character(pat2$caregiver_gender)),
+      deviation = suppressWarnings(as.numeric(pat2$deviation))
     )
-  list(visits=visits, exceptions=tibble())
+  }
+
+  visits <- bind_rows(
+shiftze_patient(u_patient, u_emp, "UCSF"),
+    normalize_patient(m_patient, m_emp, "MedSize")
+  ) |>
+    filter(!is.na(date))
+
+  # simple derived exceptions: 3σ rule, per source
+  exceptions <- visits |>
+    group_by(source) |>
+    mutate(mu = mean(deviation, na.rm=TRUE), sd = sd(deviation, na.rm=TRUE)) |>
+    ungroup() |>
+    filter(!is.na(deviation)) |>
+    filter(deviation > mu + 3*sd | deviation < mu - 3*sd) |>
+    transmute(
+      date, shift, wing, severity, caregiver_gender,
+      Source = source,
+      Timestamp = as.POSIXct(date) + hours(sample(8:18, n(), TRUE)),
+      Severity = ifelse(abs(deviation - mu) > 2*sd, "High", "Medium"),
+      Description = paste0("Out-of-control deviation: ", round(deviation,2), " min"),
+      Status = sample(c("Open","In Progress","Resolved"), n(), TRUE, prob=c(.5,.35,.15)),
+      Assigned_To = sample(c("John Smith","Sarah Johnson","Mike Davis","Alex Chen"), n(), TRUE)
+    )
+
+  list(visits=visits, exceptions=exceptions)
 }
 
-# --------- Load & normalize data ---------
-load_data <- function(){
-  if (USE_DEMO) return(make_demo())
-  suppressWarnings({
-    u_patient <- readr::read_csv(UCSF_PATIENT_CSV, show_col_types = FALSE)
-    u_emp     <- readr::read_csv(UCSF_EMP_CSV,     show_col_types = FALSE)
-    m_patient <- readr::read_csv(MED_PATIENT_CSV,  show_col_types = FALSE)
-    m_emp     <- readr::read_csv(MED_EMP_CSV,      show_col_types = FALSE)
+.DATA <- load_data()s(sample(8:18, n(), TRUE)),
+      Severity = ifelse(abs(deviation - mu) > 2*sd, "High", "Medium"),
+      Description = paste0("Out-of-control deviation: ", round(deviation,2), " min"),
+      Status = sample(c("Open","In Progress","Resolved"), n(), TRUE, prob=c(.5,.35,.15)),
+      Assigned_To = sample(c("John Smith","Sarah Johnson","Mike Davis","Alex Chen"), n(), TRUE)
+    )
+
+  list(visits=visits, exceptions=exceptions)
+}
+
+.DATA <- load_data()
+
+# ---------------- Helpers ----------------
+weco_rule1 <- function(x){ m <- mean(x, na.rm=TRUE); # Big data file picker (choose the one file to analyze)
+    selectInput("file_choice", "Data file", choices = c("UCSF Patient Intake" = "UCSF", "Med Patient Intake" = "MedSize"), selected = "UCSF"),
+    selectInput("primary_filter", "Analyze By", choices = c(in = "black",
+  dashboardHeader(title = "SigmaViewshiftth = 220),
+  dashboardSidebar(
+    width = 320,
+    sidebarMenu(id = "mainmenu",
+      menuItemshift", tabName = "dash", icon = icon("gauge-high"), selected = TRUE),
+      menuItem("Data", tabName = "data", icon = icon("table"))
+    ),
+    tags$hr(),
+    # Big data file picker (pick the one file we analyze)
+    selectInput("file_choice", "Data file", choices = c("UCSF Patient Intake" = "UCSF", "Med Patient Intake" = "MedSize"), selected = "UCSF"),
+    selectInput("primary_filter", "Analyze By", choices = c(
+      "Shift" = "shift",
+      "Severity (1-5)" = "severity"
+    ), selected = "shift"),
+    uiOutput("secondary_filter_ui"),
+    dateRangeInput("daterange", "Date range", start = Sys.Date()-29, end = Sys.Date())
+  ),
+  dashboardBody(
+    tags$head(tags$style(HTML('body, .content-wrapper { background-color:#2c3e50 !important; } .box {background:#34495e!important; border:1px solid #4a5f7a;} .box-header {background:#2c3e50!important; border-bottom:1px solid #4a5f7a;} .box-title, .nav-tabs>li>a, .sidebar a, .control-label, .info-box-text, .info-box-number {color:#ecf0f1!important;} .table {color:#ecf0f1;}'))),
+    tabItems(
+      tabItem(tabName = "dash",
+        fluidRow(
+          box(title = "Interval Deviation Control Chart", width = 8, solidHeader = TRUE, status = "primary",
+   output$secondary_filter_ui <- renderUI({
+    pf <- req(input$primary_filter)
+    choices <- switch(pf,
+      shift    = c("Morning"="morning","Day"="day","Night"="night"),
+      severity = setNames(as.character(1:5), paste("Severity", 1:5))
+    )
+    selectInput("secondary_value", "Select Specific Group", choices = choices, selected = choices[[1]])
+  })  box(title = "Exceptions (deriveshift= 4, solidHeader = TRUE, status = "primary",
+              DTOutput("exception_table"))
+        )
+      ),
+      tabItem(tabName = "data",
+        box(title = "Filtered Visits", width = 12, solidHeader = TRUE, status = "primary",
+            DTOutput("visits_table"))
+      )
+    )
+  )
+)
+
+# ---------------- Server ----------------
+server <- function(input, output, session){
+  output$secondary_filter_ui <- renderUI({
+    pf <- req(input$primary_filter)
+    choices <- switch(pf,
+      shift    = c("Morning"="morning","Day"="day","Night"="night"),
+      severity = setNames(as.character(1:5), paste("Severity", 1:5))
+    )
+    selectInputfiltered_visits <- reactive({
+    req(input$primary_filter, input$secondary_value, input$daterange, input$file_choice)
+    df <- .DATA$visits |> filter(source == input$file_choice)
+    out <- df |> filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]))
+    out <- out |> filter(.data[[input$primary_filter]] ==
+                         (if(input$primary_filter=="severity") as.integer(input$secondary_value) else input$secondary_value))
+    validate(need(nrow(out) > 0, "No rows match the current filters. Try another group or widen the date range."))
+    out
+  })hoices <- switch(pf,
+      time_of_day = c("Morning"="morning","Afternoon"="afternoon","Evening"="evening","Night"="night"),
+      wing        = c("SW"="SW","MW"="MW","MATW"="MATW","RW"="RW"),
+      severity    = c("Low","Medium","High","Critical"),
+      caregiver_gender = c("Male","Female","Other")
+    )
+    selectInput("sfiltered_exceptions <- reactive({
+    ex <- .DATA$exceptions |> filter(Source == input$file_choice)
+    ex <- ex |> filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]))
+    if(input$primary_filter=="severity"){
+      ex <- ex |> filter(severity == as.integer(input$secondary_value))
+    } else {
+      ex <- ex |> filter(shift == input$secondary_value)
+    }
+    ex
+  }) filter_by_inputs <- function(df, pf, sv, dr){
+    if(is.null(df) || !nrow(df)) return(df)
+    out <- df |>
+      filter(date >= as.Date(dr[1]), date <= as.Date(dr[2]))
+    if(!is.null(sv) && nzchar(sv)) out <- out |> filter(.data[[pf]] == sv)
+    out
+  }
+
+  filtered_visits <- reactive({
+    req(input$primary_filter, input$secondary_value, input$daterange, input$file_choice)
+    df <- .DATA$visits |> filter(source == input$file_choice)
+    out <- df |> filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]))
+    out <- out |> filter(.data[[input$primary_filter]] ==
+                         (if(input$primary_filter=="severity") as.integer(input$secondary_value) else input$secondary_value))
+    validate(need(nrow(out) > 0, "No rows match the current filters. Try another group or widen the date range."))
+    out
   })
-  # Clean names for robust joins
-  if (!requireNamespace("janitor", quietly = TRUE)) {
-    message("Consider installing 'janitor' for cleaner name handling.")
-  } else {
-    u_patient <- janitor::clean_names(u_patient)
-    u_emp     <- janitor::clean_names(u_emp)
-    m_patient <- janitor::clean_names(m_patient)
-    m_emp     <- janitor::clean_names(m_emp)
-  }
-  
-  # Heuristics to find keys and dates
-  find_col <- function(df, candidates){
-    nm <- names(df)
-    hit <- candidates[candidates %in% nm]
-    if(length(hit)) hit[1] else NULL
-  }
-  
-  # Map patient files to normalized schema
-  normalize_patient <- fun
-  
-  # --------- Helpers ---------
-  cp_calc  <- function(sigma_s, usl, lsl){ if(is.na(usl) || is.na(lsl)) NA_real_ else abs(usl-lsl)/(6*sigma_s) }
-  cpk_calc <- function(mu, sigma_s, usl, lsl){
-    if(is.na(usl) && is.na(lsl)) return(NA_real_)
-    a <- if(!is.na(usl)) (usl - mu)/(3*sigma_s) else Inf
-    b <- if(!is.na(lsl)) (mu - lsl)/(3*sigma_s) else Inf
-    pmin(a,b)
-  }
-  weco_rule1 <- function(x){ m <- mean(x, TRUE); s <- sd(x, TRUE); which(x > m + 3*s | x < m - 3*s) }
-  prep_pareto <- function(strings){ tibble(cause=strings) |> count(cause,name="freq") |> arrange(desc(freq)) |> mutate(pct=100*freq/sum(freq), cum_pct=cumsum(pct)) }
-  
-  # --------- UI ---------
-  ui <- dashboardPage(
-    skin = "black",
-    dashboardHeader(title = "SigmaView", titleWidth = 220),
-    dashboardSidebar(
-      width = 320,
-      sidebarMenu(id = "mainmenu",
-                  menuItem("Dashboard", tabName = "dash", icon = icon("gauge-high"), selected = TRUE),
-                  menuItem("Data", tabName = "data", icon = icon("table")),
-                  menuItem("Settings", tabName = "settings", icon = icon("gear"))
-      ),
-      tags$hr(),
-      selectInput("primary_filter", "Analyze By", choices = c(
-        "Time of Day"="time_of_day","Wing"="wing","Severity"="severity","Caregiver Gender"="caregiver_gender"
-      ), selected = "time_of_day"),
-      uiOutput("secondary_filter_ui"),
-      dateRangeInput("daterange", "Date range", start = Sys.Date()-29, end = Sys.Date()),
-      actionButton("clear_filters", "Clear filters", icon = icon("eraser"), class = "btn btn-default")
-    ),
-    dashboardBody(
-      tags$head(tags$style(HTML('body, .content-wrapper { background-color:#2c3e50 !important; } .box {background:#34495e!important; border:1px solid #4a5f7a;} .box-header {background:#2c3e50!important; border-bottom:1px solid #4a5f7a;} .box-title, .nav-tabs>li>a, .sidebar a, .control-label, .info-box-text, .info-box-number {color:#ecf0f1!important;} .skin-black .main-header .navbar {background:#34495e;} .skin-black .main-header .logo {background:#34495e; color:#ecf0f1;} .table {color:#ecf0f1;}'))),
-      
-      tabItems(
-        tabItem(tabName = "dash",
-                fluidRow(valueBoxOutput("vb_cpk",4), valueBoxOutput("vb_ncr",4), valueBoxOutput("vb_ooc",4)),
-                fluidRow(valueBoxOutput("vb_mean",3), valueBoxOutput("vb_sd",3), valueBoxOutput("vb_median",3), valueBoxOutput("vb_tavg",3)),
-                fluidRow(
-                  box(title = "Interval Deviation Control Chart", width = 7, solidHeader = TRUE, status = "primary",
-                      plotlyOutput("control_chart", height = 420), footer = tagList(downloadButton("dl_plot","Download PNG"))
-                  ),
-                  box(title = "Root Cause Pareto (Top 5)", width = 5, solidHeader = TRUE, status = "primary",
-                      plotlyOutput("pareto_chart", height = 220)
-                  )
-                ),
-                fluidRow(
-                  box(title = "Exception Log", width = 12, solidHeader = TRUE, status = "primary",
-                      fluidRow(
-                        column(3, selectInput("ex_sev", "Severity", choices = c("All","High","Medium","Low"), selected = "All")),
-                        column(3, selectInput("ex_status", "Status", choices = c("All","Open","In Progress","Resolved"), selected = "All")),
-                        column(6, textInput("ex_search", "Search description", placeholder = "Search..."))
-                      ),
-                      DTOutput("exception_table"), br(), downloadButton("dl_exceptions","Download exceptions (CSV)")
-                  )
-                )
-        ),
-        tabItem(tabName = "data",
-                box(title = "Filtered Data", width = 12, solidHeader = TRUE, status = "primary",
-                    tabBox(id="databox", width = 12,
-                           tabPanel("Visits",   DTOutput("visits_table")),
-                           tabPanel("Exceptions",DTOutput("exceptions_table"))
-                    ),
-                    br(), downloadButton("dl_visits","Download visits (CSV)"),
-                    tags$span("  "), downloadButton("dl_exceptions2","Download exceptions (CSV)")
-                )
-        ),
-        tabItem(tabName = "settings",
-                box(title = "Capability settings", width = 6, solidHeader = TRUE, status = "primary",
-                    numericInput("lsl", "LSL (min deviation)", value = -5, step = 0.5),
-                    numericInput("usl", "USL (max deviation)", value = 5, step = 0.5),
-                    helpText("For lateness deviation with target at 0, set symmetric LSL/USL like ±5 min. Cpk is computed from filtered data.")
-                ),
-                box(title = "WECO rules", width = 6, solidHeader = TRUE, status = "primary",
-                    checkboxInput("rule1", "Rule 1: any point beyond 3σ", value = TRUE),
-                    helpText("Add more rules (runs, trends, zones) as needed.")
-                )
-        )
-      )
-    )
-  )
-  
-  # --------- Server ---------
-  server <- function(input, output, session){
-    visits_raw <- reactiveVal(.DATA$visits)
-    exceptions_raw <- reactiveVal(.DATA$exceptions)
-    
-    observeEvent(input$clear_filters, {
-      updateSelectInput(session, "primary_filter", selected = "time_of_day")
-      updateDateRangeInput(session, "daterange", start = Sys.Date()-29, end = Sys.Date())
-    })
-    
-    # Secondary filter choices
-    output$secondary_filter_ui <- renderUI({
-      pf <- req(input$primary_filter)
-      choices <- switch(pf,
-                        time_of_day = c("Morning"="morning","Afternoon"="afternoon","Evening"="evening","Night"="night"),
-                        wing        = c("SW"="SW","MW"="MW","MATW"="MATW","RW"="RW"),
-                        severity    = c("Low","Medium","High","Critical"),
-                        caregiver_gender = c("Male","Female","Other")
-      )
-      selectInput("secondary_value", "Select Specific Group", choices = choices, selected = choices[[1]])
-    })
-    
-    # Shared filter function
-    filter_by_inputs <- function(df, pf, sv, dr){
-      out <- df |>
-        filter(date >= as.Date(dr[1]), date <= as.Date(dr[2]))
-      if(!is.null(sv) && nzchar(sv)) out <- out |> filter(.data[[pf]] == sv)
-      out
-    }
-    
-    filtered_visits <- reactive({
-      req(input$primary_filter, input$secondary_value, input$daterange)
-      filter_by_inputs(visits_raw(), input$primary_filter, input$secondary_value, input$daterange)
-    })
-    
-    filtered_exceptions <- reactive({
-      req(input$primary_filter, input$secondary_value, input$daterange)
-      filter_by_inputs(exceptions_raw(), input$primary_filter, input$secondary_value, input$daterange)
-    })
-    
-    # Metrics
-    metrics <- reactive({
-      dat <- req(filtered_visits())
-      mu <- mean(dat$deviation, na.rm=TRUE)
-      sdv <- sd(dat$deviation, na.rm=TRUE)
-      med <- median(dat$deviation, na.rm=TRUE)
-      tavg <- mean(abs(dat$deviation) + 13, na.rm=TRUE)  # demo proxy
-      list(mu=mu, sd=sdv, med=med, tavg=tavg)
-    })
-    
-    capab <- reactive({
-      dat <- req(filtered_visits())
-      mu <- mean(dat$deviation, na.rm=TRUE)
-      sdv <- sd(dat$deviation, na.rm=TRUE)
-      cp  <- cp_calc(sdv, input$usl, input$lsl)
-      cpk <- cpk_calc(mu, sdv, input$usl, input$lsl)
-      ncr <- if(!is.na(input$usl) && !is.na(input$lsl)) mean(dat$deviation > input$usl | dat$deviation < input$lsl) else NA_real_
-      list(cp=cp, cpk=cpk, ncr=ncr)
-    })
-    
-    output$vb_mean <- renderValueBox({ valueBox(sprintf("%.2f min", metrics()$mu), "Mean Deviation", icon = icon("clock"), color = "aqua") })
-    output$vb_sd   <- renderValueBox({ valueBox(sprintf("%.2f", metrics()$sd), "Standard Deviation", icon = icon("calculator"), color = "purple") })
-    output$vb_median <- renderValueBox({ valueBox(sprintf("%.2f min", metrics()$med), "Median Deviation", icon = icon("chart-bar"), color = "teal") })
-    output$vb_tavg <- renderValueBox({ valueBox(sprintf("%.1f min", metrics()$tavg), "Avg T_Actual (demo)", icon = icon("stopwatch"), color = "orange") })
-    output$vb_cpk <- renderValueBox({ valueBox(sprintf("%.2f", capab()$cpk), "Overall Interval Cpk", icon = icon("chart-line"), color = "blue") })
-    output$vb_ncr <- renderValueBox({ valueBox(ifelse(is.na(capab()$ncr), "—", paste0(round(100*capab()$ncr,1),"%")), "Non-Compliance Rate", icon = icon("exclamation-triangle"), color = "yellow") })
-    output$vb_ooc <- renderValueBox({
-      dat <- req(filtered_visits())
-      idx <- if(isTRUE(input$rule1)) weco_rule1(dat$deviation) else integer()
-      valueBox(length(idx), "Live OOC Alerts (Rule 1)", icon = icon("bell"), color = "red")
-    })
-    
-    # Control chart from filtered_visits
-    output$control_chart <- renderPlotly({
-      dat <- req(filtered_visits()) |> arrange(date)
-      validate(need(nrow(dat) > 1, "Not enough data after filters."))
-      mu <- mean(dat$deviation, na.rm=TRUE)
-      sdv <- sd(dat$deviation, na.rm=TRUE)
-      ucl <- mu + 3*sdv; lcl <- mu - 3*sdv
-      idx <- if(isTRUE(input$rule1)) weco_rule1(dat$deviation) else integer()
-      
-      p <- plot_ly(dat, x=~date, y=~deviation, type='scatter', mode='lines+markers', name='Deviation') |>
-        add_trace(y=~I(rep(ucl,nrow(dat))), name='UCL', mode='lines', line=list(dash='dash')) |>
-        add_trace(y=~I(rep(lcl,nrow(dat))), name='LCL', mode='lines', line=list(dash='dash')) |>
-        add_trace(y=~I(rep(mu, nrow(dat))), name='Mean', mode='lines', line=list(dash='dot'))
-      if(length(idx)>0) p <- p |> add_markers(x=dat$date[idx], y=dat$deviation[idx], name='OOC', marker=list(size=10))
-      
-      p |> layout(xaxis=list(title='Date', color='white', gridcolor='#4a5f7a'),
-                  yaxis=list(title='Deviation (min)', color='white', gridcolor='#4a5f7a'),
-                  plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=list(color='white'))
-    })
-    
-    # Pareto from Exceptions (filtered)
-    output$pareto_chart <- renderPlotly({
-      ex <- req(filtered_exceptions())
-      validate(need(nrow(ex) > 0, "No exceptions in range."))
-      causes <- str_extract(ex$Description, "^[A-Za-z]+")
-      tab <- prep_pareto(causes) |> slice_head(n=5)
-      
-      p1 <- plot_ly(tab, x=~cause, y=~pct, type='bar', name='Percent')
-      p2 <- plot_ly(tab, x=~cause, y=~cum_pct, type='scatter', mode='lines+markers', name='Cumulative %', yaxis='y2')
-      subplot(p1, p2, shareX=TRUE) |>
-        layout(yaxis=list(title='%'), yaxis2=list(overlaying='y', side='right', title='Cum %', rangemode='tozero'),
-               showlegend=FALSE, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=list(color='white'))
-    })
-    
-    # Exception table (filtered)
-    ex_filtered_extra <- reactive({
-      ex <- filtered_exceptions()
-      if(input$ex_sev != "All") ex <- ex |> filter(Severity == input$ex_sev)
-      if(input$ex_status != "All") ex <- ex |> filter(Status == input$ex_status)
-      if(nzchar(input$ex_search)) ex <- ex |> filter(str_detect(Description, regex(input$ex_search, TRUE)))
-      ex
-    })
-    
-    output$exception_table <- renderDT({
-      datatable(ex_filtered_extra(), options=list(pageLength=8, dom='tip', scrollY='260px', scrollCollapse=TRUE), rownames=FALSE, class='compact stripe hover') |>
-        formatStyle("Severity", target='cell', backgroundColor = styleEqual(c("High","Medium","Low"), c("#e74c3c","#f39c12","#27ae60")), color='white')
-    })
-    
-    # Data tab tables
-    output$visits_table <- renderDT({ datatable(filtered_visits(), options=list(pageLength=10, dom='tip'), rownames=FALSE) })
-    output$exceptions_table <- renderDT({ datatable(filtered_exceptions(), options=list(pageLength=10, dom='tip'), rownames=FALSE) })
-    
-    # Downloads
-    output$dl_visits <- downloadHandler(
-      filename = function() paste0("visits_", Sys.Date(), ".csv"),
-      content  = function(file) readr::write_csv(filtered_visits(), file)
-    )
-    output$dl_exceptions <- downloadHandler(
-      filename = function() paste0("exceptions_", Sys.Date(), ".csv"),
-      content  = function(file) readr::write_csv(ex_filtered_extra(), file)
-    )
-    output$dl_exceptions2 <- downloadHandler(
-      filename = function() paste0("exceptions_", Sys.Date(), ".csv"),
-      content  = function(file) readr::write_csv(filtered_exceptions(), file)
-    )
-    
-    # Plot download (static PNG)
-    output$dl_plot <- downloadHandler(
-      filename = function() paste0("control_chart_", Sys.Date(), ".png"),
-      content = function(file){
-        dat <- filtered_visits() |> arrange(date)
-        mu <- mean(dat$deviation, TRUE); sdv <- sd(dat$deviation, TRUE)
-        ucl <- mu + 3*sdv; lcl <- mu - 3*sdv
-        gg <- ggplot2::ggplot(dat, ggplot2::aes(date, deviation)) +
-          ggplot2::geom_line() + ggplot2::geom_point() +
-          ggplot2::geom_hline(yintercept = mu, linetype = 'dotted') +
-          ggplot2::geom_hline(yintercept = ucl, linetype = 'dashed') +
-          ggplot2::geom_hline(yintercept = lcl, linetype = 'dashed') +
-          ggplot2::labs(x='Date', y='Deviation (min)', title='Interval Deviation Control Chart') +
-          ggplot2::theme_minimal()
-        ggplot2::ggsave(file, gg, width = 9, height = 5, dpi = 150)
-      }
-    )
-  }
-  
-  shinyApp(ui, server)
-  # SigmaView — Two‑Dataset Shiny Dashboard (filters wired to BOTH)
-  # =================================================================
-  # This is a full drop‑in app.R you can run. It:
-  #  - Loads TWO datasets (Visits + Exceptions) and standardizes columns
-  #  - Uses ONE set of inputs (primary + secondary + date range)
-  #  - Applies filters to BOTH datasets via shared reactive helpers
-  #  - Builds X̄ control chart from visits + WECO Rule 1 (3σ) markers
-  #  - Shows Exception log (filtered) and a real Pareto with cumulative %
-  #  - Adds Data tab (two tables) and Settings for LSL/USL + rules
-  #  - Ships with a DEMO generator; set USE_DEMO <- FALSE and point to your CSVs
-  
-  # --------- Packages ---------
-  library(shiny)
-  library(shinydashboard)
-  library(plotly)
-  library(DT)
-  library(dplyr)
-  library(tidyr)
-  library(stringr)
-  library(lubridate)
-  library(readr)
-  
-  # --------- Switch: demo vs. your files ---------
-  USE_DEMO <- TRUE   # <- set to FALSE to use your real CSVs below
-  VISITS_CSV    <- "/path/to/your/visits.csv"      # expects: date, time_of_day, wing, severity, caregiver_gender, deviation
-  EXCEPTIONS_CSV<- "/path/to/your/exceptions.csv"  # expects: date, time_of_day, wing, severity, caregiver_gender, Description, Severity, Status, Assigned_To
-  
-  # --------- Demo Data Generator ---------
-  make_demo <- function(n_days = 60, seed = 42){
-    set.seed(seed)
-    dates <- seq(today()-days(n_days-1), today(), by = "day")
-    wings <- c("SW","MW","MATW","RW")
-    severities <- c("Low","Medium","High","Critical")
-    genders <- c("Male","Female","Other")
-    tod <- c("morning","afternoon","evening","night")
-    
-    visits <- tidyr::crossing(
-      date = dates, time_of_day = tod, wing = wings
-    ) |>
-      mutate(
-        severity = sample(severities, n(), TRUE, prob = c(.4,.35,.2,.05)),
-        caregiver_gender = sample(genders, n(), TRUE, prob = c(.35,.6,.05)),
-        base = rnorm(n(), mean = c(1.8,2.5,2.0,2.3)[match(time_of_day,tod)], sd = 0.8) +
-          rnorm(n(), mean = c(0.2,0.0,0.3,-0.1)[match(wing,wings)], sd = 0.5),
-        sev_bump = case_when(
-          severity=="Low" ~ rnorm(n(),0,0.4),
-          severity=="Medium" ~ rnorm(n(),0.2,0.6),
-          severity=="High" ~ rnorm(n(),0.6,0.9),
-          TRUE ~ rnorm(n(),1.0,1.2)
-        ),
-        deviation = base + sev_bump
-      ) |>
-      select(date, time_of_day, wing, severity, caregiver_gender, deviation)
-    
-    exceptions <- tibble(
-      date = sample(dates, ceiling(n_days*0.7), TRUE),
-      time_of_day = sample(tod, ceiling(n_days*0.7), TRUE),
-      wing = sample(wings, ceiling(n_days*0.7), TRUE),
-      severity = sample(severities, ceiling(n_days*0.7), TRUE),
-      caregiver_gender = sample(genders, ceiling(n_days*0.7), TRUE),
-      Timestamp = as.POSIXct(date) + hours(sample(8:20, ceiling(n_days*0.7), TRUE)),
-      Severity = sample(c("High","Medium","Low"), ceiling(n_days*0.7), TRUE, prob = c(.25,.5,.25)),
-      Description = sample(c(
-        "Equipment malfunction in Wing A",
-        "Staff shortage - 2 nurses absent",
-        "Patient non-compliance with medication",
-        "Communication error between shifts",
-        "Medication delivery delay"
-      ), ceiling(n_days*0.7), TRUE),
-      Status = sample(c("Open","In Progress","Resolved"), ceiling(n_days*0.7), TRUE, prob = c(.35,.4,.25)),
-      Assigned_To = sample(c("John Smith","Sarah Johnson","Mike Davis","Alex Chen"), ceiling(n_days*0.7), TRUE)
-    )
-    
-    list(visits=visits, exceptions=exceptions)
-  }
-  
-  # --------- Load & normalize data ---------
-  load_data <- function(){
-    if (USE_DEMO) return(make_demo())
-    
-    visits <- read_csv(VISITS_CSV, show_col_types = FALSE)
-    exceptions <- read_csv(EXCEPTIONS_CSV, show_col_types = FALSE)
-    
-    # Normalize columns once so filters are reusable
-    visits <- visits |>
-      mutate(
-        date = as.Date(date),
-        time_of_day = tolower(as.character(time_of_day)),
-        wing = as.character(wing),
-        severity = stringr::str_to_title(as.character(severity)),
-        caregiver_gender = stringr::str_to_title(as.character(caregiver_gender))
-      ) |>
-      select(date, time_of_day, wing, severity, caregiver_gender, deviation)
-    
-    # If your exceptions file uses different names, rename here
-    exceptions <- exceptions |>
-      rename(.Date = date) |>
-      mutate(
-        date = as.Date(.Date), .Date = NULL,
-        time_of_day = tolower(as.character(time_of_day)),
-        wing = as.character(wing),
-        severity = stringr::str_to_title(as.character(severity)),
-        caregiver_gender = stringr::str_to_title(as.character(caregiver_gender))
-      )
-    
-    list(visits=visits, exceptions=exceptions)
-  }
-  
-  .DATA <- load_data()
-  
-  # --------- Helpers ---------
-  cp_calc  <- function(sigma_s, usl, lsl){ if(is.na(usl) || is.na(lsl)) NA_real_ else abs(usl-lsl)/(6*sigma_s) }
-  cpk_calc <- function(mu, sigma_s, usl, lsl){
-    if(is.na(usl) && is.na(lsl)) return(NA_real_)
-    a <- if(!is.na(usl)) (usl - mu)/(3*sigma_s) else Inf
-    b <- if(!is.na(lsl)) (mu - lsl)/(3*sigma_s) else Inf
-    pmin(a,b)
-  }
-  weco_rule1 <- function(x){ m <- mean(x, TRUE); s <- sd(x, TRUE); which(x > m + 3*s | x < m - 3*s) }
-  prep_pareto <- function(strings){ tibble(cause=strings) |> count(cause,name="freq") |> arrange(desc(freq)) |> mutate(pct=100*freq/sum(freq), cum_pct=cumsum(pct)) }
-  
-  # --------- UI ---------
-  ui <- dashboardPage(
-    skin = "black",
-    dashboardHeader(title = "SigmaView", titleWidth = 220),
-    dashboardSidebar(
-      width = 320,
-      sidebarMenu(id = "mainmenu",
-                  menuItem("Dashboard", tabName = "dash", icon = icon("gauge-high"), selected = TRUE),
-                  menuItem("Data", tabName = "data", icon = icon("table")),
-                  menuItem("Settings", tabName = "settings", icon = icon("gear"))
-      ),
-      tags$hr(),
-      selectInput("primary_filter", "Analyze By", choices = c(
-        "Time of Day"="time_of_day","Wing"="wing","Severity"="severity","Caregiver Gender"="caregiver_gender"
-      ), selected = "time_of_day"),
-      uiOutput("secondary_filter_ui"),
-      dateRangeInput("daterange", "Date range", start = Sys.Date()-29, end = Sys.Date()),
-      actionButton("clear_filters", "Clear filters", icon = icon("eraser"), class = "btn btn-default")
-    ),
-    dashboardBody(
-      tags$head(tags$style(HTML('body, .content-wrapper { background-color:#2c3e50 !important; } .box {background:#34495e!important; border:1px solid #4a5f7a;} .box-header {background:#2c3e50!important; border-bottom:1px solid #4a5f7a;} .box-title, .nav-tabs>li>a, .sidebar a, .control-label, .info-box-text, .info-box-number {color:#ecf0f1!important;} .skin-black .main-header .navbar {background:#34495e;} .skin-black .main-header .logo {background:#34495e; color:#ecf0f1;} .table {color:#ecf0f1;}'))),
-      
-      tabItems(
-        tabItem(tabName = "dash",
-                fluidRow(valueBoxOutput("vb_cpk",4), valueBoxOutput("vb_ncr",4), valueBoxOutput("vb_ooc",4)),
-                fluidRow(valueBoxOutput("vb_mean",3), valueBoxOutput("vb_sd",3), valueBoxOutput("vb_median",3), valueBoxOutput("vb_tavg",3)),
-                fluidRow(
-                  box(title = "Interval Deviation Control Chart", width = 7, solidHeader = TRUE, status = "primary",
-                      plotlyOutput("control_chart", height = 420), footer = tagList(downloadButton("dl_plot","Download PNG"))
-                  ),
-                  box(title = "Root Cause Pareto (Top 5)", width = 5, solidHeader = TRUE, status = "primary",
-                      plotlyOutput("pareto_chart", height = 220)
-                  )
-                ),
-                fluidRow(
-                  box(title = "Exception Log", width = 12, solidHeader = TRUE, status = "primary",
-                      fluidRow(
-                        column(3, selectInput("ex_sev", "Severity", choices = c("All","High","Medium","Low"), selected = "All")),
-                        column(3, selectInput("ex_status", "Status", choices = c("All","Open","In Progress","Resolved"), selected = "All")),
-                        column(6, textInput("ex_search", "Search description", placeholder = "Search..."))
-                      ),
-                      DTOutput("exception_table"), br(), downloadButton("dl_exceptions","Download exceptions (CSV)")
-                  )
-                )
-        ),
-        tabItem(tabName = "data",
-                box(title = "Filtered Data", width = 12, solidHeader = TRUE, status = "primary",
-                    tabBox(id="databox", width = 12,
-                           tabPanel("Visits",   DTOutput("visits_table")),
-                           tabPanel("Exceptions",DTOutput("exceptions_table"))
-                    ),
-                    br(), downloadButton("dl_visits","Download visits (CSV)"),
-                    tags$span("  "), downloadButton("dl_exceptions2","Download exceptions (CSV)")
-                )
-        ),
-        tabItem(tabName = "settings",
-                box(title = "Capability settings", width = 6, solidHeader = TRUE, status = "primary",
-                    numericInput("lsl", "LSL (min deviation)", value = -5, step = 0.5),
-                    numericInput("usl", "USL (max deviation)", value = 5, step = 0.5),
-                    helpText("For lateness deviation with target at 0, set symmetric LSL/USL like ±5 min. Cpk is computed from filtered data.")
-                ),
-                box(title = "WECO rules", width = 6, solidHeader = TRUE, status = "primary",
-                    checkboxInput("rule1", "Rule 1: any point beyond 3σ", value = TRUE),
-                    helpText("Add more rules (runs, trends, zones) as needed.")
-                )
-        )
-      )
-    )
-  )
-  
-  # --------- Server ---------
-  server <- function(input, output, session){
-    visits_raw <- reactiveVal(.DATA$visits)
-    exceptions_raw <- reactiveVal(.DATA$exceptions)
-    
-    observeEvent(input$clear_filters, {
-      updateSelectInput(session, "primary_filter", selected = "time_of_day")
-      updateDateRangeInput(session, "daterange", start = Sys.Date()-29, end = Sys.Date())
-    })
-    
-    # Secondary filter choices
-    output$secondary_filter_ui <- renderUI({
-      pf <- req(input$primary_filter)
-      choices <- switch(pf,
-                        time_of_day = c("Morning"="morning","Afternoon"="afternoon","Evening"="evening","Night"="night"),
-                        wing        = c("SW"="SW","MW"="MW","MATW"="MATW","RW"="RW"),
-                        severity    = c("Low","Medium","High","Critical"),
-                        caregiver_gender = c("Male","Female","Other")
-      )
-      selectInput("secondary_value", "Select Specific Group", choices = choices, selected = choices[[1]])
-    })
-    
-    # Shared filter function
-    filter_by_inputs <- function(df, pf, sv, dr){
-      out <- df |>
-        filter(date >= as.Date(dr[1]), date <= as.Date(dr[2]))
-      if(!is.null(sv) && nzchar(sv)) out <- out |> filter(.data[[pf]] == sv)
-      out
-    }
-    
-    filtered_visits <- reactive({
-      req(input$primary_filter, input$secondary_value, input$daterange)
-      filter_by_inputs(visits_raw(), input$primary_filter, input$secondary_value, input$daterange)
-    })
-    
-    filtered_exceptions <- reactive({
-      req(input$primary_filter, input$secondary_value, input$daterange)
-      filter_by_inputs(exceptions_raw(), input$primary_filter, input$secondary_value, input$daterange)
-    })
-    
-    # Metrics
-    metrics <- reactive({
-      dat <- req(filtered_visits())
-      mu <- mean(dat$deviation, na.rm=TRUE)
-      sdv <- sd(dat$deviation, na.rm=TRUE)
-      med <- median(dat$deviation, na.rm=TRUE)
-      tavg <- mean(abs(dat$deviation) + 13, na.rm=TRUE)  # demo proxy
-      list(mu=mu, sd=sdv, med=med, tavg=tavg)
-    })
-    
-    capab <- reactive({
-      dat <- req(filtered_visits())
-      mu <- mean(dat$deviation, na.rm=TRUE)
-      sdv <- sd(dat$deviation, na.rm=TRUE)
-      cp  <- cp_calc(sdv, input$usl, input$lsl)
-      cpk <- cpk_calc(mu, sdv, input$usl, input$lsl)
-      ncr <- if(!is.na(input$usl) && !is.na(input$lsl)) mean(dat$deviation > input$usl | dat$deviation < input$lsl) else NA_real_
-      list(cp=cp, cpk=cpk, ncr=ncr)
-    })
-    
-    output$vb_mean <- renderValueBox({ valueBox(sprintf("%.2f min", metrics()$mu), "Mean Deviation", icon = icon("clock"), color = "aqua") })
-    output$vb_sd   <- renderValueBox({ valueBox(sprintf("%.2f", metrics()$sd), "Standard Deviation", icon = icon("calculator"), color = "purple") })
-    output$vb_median <- renderValueBox({ valueBox(sprintf("%.2f min", metrics()$med), "Median Deviation", icon = icon("chart-bar"), color = "teal") })
-    output$vb_tavg <- renderValueBox({ valueBox(sprintf("%.1f min", metrics()$tavg), "Avg T_Actual (demo)", icon = icon("stopwatch"), color = "orange") })
-    output$vb_cpk <- renderValueBox({ valueBox(sprintf("%.2f", capab()$cpk), "Overall Interval Cpk", icon = icon("chart-line"), color = "blue") })
-    output$vb_ncr <- renderValueBox({ valueBox(ifelse(is.na(capab()$ncr), "—", paste0(round(100*capab()$ncr,1),"%")), "Non-Compliance Rate", icon = icon("exclamation-triangle"), color = "yellow") })
-    output$vb_ooc <- renderValueBox({
-      dat <- req(filtered_visits())
-      idx <- if(isTRUE(input$rule1)) weco_rule1(dat$deviation) else integer()
-      valueBox(length(idx), "Live OOC Alerts (Rule 1)", icon = icon("bell"), color = "red")
-    })
-    
-    # Control chart from filtered_visits
-    output$control_chart <- renderPlotly({
-      dat <- req(filtered_visits()) |> arrange(date)
-      validate(need(nrow(dat) > 1, "Not enough data after filters."))
-      mu <- mean(dat$deviation, na.rm=TRUE)
-      sdv <- sd(dat$deviation, na.rm=TRUE)
-      ucl <- mu + 3*sdv; lcl <- mu - 3*sdv
-      idx <- if(isTRUE(input$rule1)) weco_rule1(dat$deviation) else integer()
-      
-      p <- plot_ly(dat, x=~date, y=~deviation, type='scatter', mode='lines+markers', name='Deviation') |>
-        add_trace(y=~I(rep(ucl,nrow(dat))), name='UCL', mode='lines', line=list(dash='dash')) |>
-        add_trace(y=~I(rep(lcl,nrow(dat))), name='LCL', mode='lines', line=list(dash='dash')) |>
-        add_trace(y=~I(rep(mu, nrow(dat))), name='Mean', mode='lines', line=list(dash='dot'))
-      if(length(idx)>0) p <- p |> add_markers(x=dat$date[idx], y=dat$deviation[idx], name='OOC', marker=list(size=10))
-      
-      p |> layout(xaxis=list(title='Date', color='white', gridcolor='#4a5f7a'),
-                  yaxis=list(title='Deviation (min)', color='white', gridcolor='#4a5f7a'),
-                  plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=list(color='white'))
-    })
-    
-    # Pareto from Exceptions (filtered)
-    output$pareto_chart <- renderPlotly({
-      ex <- req(filtered_exceptions())
-      validate(need(nrow(ex) > 0, "No exceptions in range."))
-      causes <- str_extract(ex$Description, "^[A-Za-z]+")
-      tab <- prep_pareto(causes) |> slice_head(n=5)
-      
-      p1 <- plot_ly(tab, x=~cause, y=~pct, type='bar', name='Percent')
-      p2 <- plot_ly(tab, x=~cause, y=~cum_pct, type='scatter', mode='lines+markers', name='Cumulative %', yaxis='y2')
-      subplot(p1, p2, shareX=TRUE) |>
-        layout(yaxis=list(title='%'), yaxis2=list(overlaying='y', side='right', title='Cum %', rangemode='tozero'),
-               showlegend=FALSE, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=list(color='white'))
-    })
-    
-    # Exception table (filtered)
-    ex_filtered_extra <- reactive({
-      ex <- filtered_exceptions()
-      if(input$ex_sev != "All") ex <- ex |> filter(Severity == input$ex_sev)
-      if(input$ex_status != "All") ex <- ex |> filter(Status == input$ex_status)
-      if(nzchar(input$ex_search)) ex <- ex |> filter(str_detect(Description, regex(input$ex_search, TRUE)))
-      ex
-    })
-    
-    output$exception_table <- renderDT({
-      datatable(ex_filtered_extra(), options=list(pageLength=8, dom='tip', scrollY='260px', scrollCollapse=TRUE), rownames=FALSE, class='compact stripe hover') |>
-        formatStyle("Severity", target='cell', backgroundColor = styleEqual(c("High","Medium","Low"), c("#e74c3c","#f39c12","#27ae60")), color='white')
-    })
-    
-    # Data tab tables
-    output$visits_table <- renderDT({ datatable(filtered_visits(), options=list(pageLength=10, dom='tip'), rownames=FALSE) })
-    output$exceptions_table <- renderDT({ datatable(filtered_exceptions(), options=list(pageLength=10, dom='tip'), rownames=FALSE) })
-    
-    # Downloads
-    output$dl_visits <- downloadHandler(
-      filename = function() paste0("visits_", Sys.Date(), ".csv"),
-      content  = function(file) readr::write_csv(filtered_visits(), file)
-    )
-    output$dl_exceptions <- downloadHandler(
-      filename = function() paste0("exceptions_", Sys.Date(), ".csv"),
-      content  = function(file) readr::write_csv(ex_filtered_extra(), file)
-    )
-    output$dl_exceptions2 <- downloadHandler(
-      filename = function() paste0("exceptions_", Sys.Date(), ".csv"),
-      content  = function(file) readr::write_csv(filtered_exceptions(), file)
-    )
-    
-    # Plot download (static PNG)
-    output$dl_plot <- downloadHandler(
-      filename = function() paste0("control_chart_", Sys.Date(), ".png"),
-      content = function(file){
-        dat <- filtered_visits() |> arrange(date)
-        mu <- mean(dat$deviation, TRUE); sdv <- sd(dat$deviation, TRUE)
-        ucl <- mu + 3*sdv; lcl <- mu - 3*sdv
-        gg <- ggplot2::ggplot(dat, ggplot2::aes(date, deviation)) +
-          ggplot2::geom_line() + ggplot2::geom_point() +
-          ggplot2::geom_hline(yintercept = mu, linetype = 'dotted') +
-          ggplot2::geom_hline(yintercept = ucl, linetype = 'dashed') +
-          ggplot2::geom_hline(yintercept = lcl, linetype = 'dashed') +
-          ggplot2::labs(x='Date', y='Deviation (min)', title='Interval Deviation Control Chart') +
-          ggplot2::theme_minimal()
-        ggplot2::ggsave(file, gg, width = 9, height = 5, dpi = 150)
-      }
-    )
-  }
-  
-  shinyApp(ui, server)
+    df <- .DATA$visits
+    if (input$dataset != "Both") df <- df |> filter(source == input$dataset)
+    res <- filter_by_inputs(df, input$primary_filter, input$secondary_value, input$daterange)
+    validate(need(nrow(res) > 0, "No rows match the current filters. Try another group or widen the date range."))
+    res
+  })
+
+  filtered_exceptions <- reactive({
+    ex <- .DATA$exceptions |> filter(Source == input$file_choice)
+    ex <- ex |> filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]))
+    if(input$primary_f ex <- ex |> filter(Source == input$dataset)
+    filter_by_inputs(ex, input$primary_filter, input$secondary_value, input$daterange)
+  })
+
+  output$control_chart <- renderPlotly({
+    dat <- filtered_visits() |> arrange(date)
+    mu <- mean(dat$deviation, na.rm=TRUE)
+    sdv <- sd(dat$deviation, na.rm=TRUE)
+    ucl <- mu + 3*sdv; lcl <- mu - 3*sdv
+    idx <- weco_rule1(dat$deviation)
+
+    p <- plot_ly(dat, x=~date, y=~deviation, type='scatter', mode='lines+markers', name='Deviation') |>
+      add_trace(y=~I(rep(ucl,nrow(dat))), name='UCL', mode='lines', line=list(dash='dash')) |>
+  p(lcl,nrow(dat))), name='LCL', mode='lines', line=list(dash='dash')) |>
+      add_trace(y=~I(rep(mu, nrow(dat))), name='Mean', mode='lines', line=list(dash='dot'))
+    if(length(idx)>0) p <- p |> add_markers(x=dat$date[idx], y=dat$deviation[idx], name='OOC', marker=list(size=10))
+    p |> layout(xaxis=list(title='Date', color='white', gridcolor='#4a5f7a'),
+                yaxis=list(title='Deviation (min)', color='white', gridcolor='#4a5f7a'),
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=list(color='white'))
+  })
+
+  output$exception_table <- renderDT({
+    datatable(filtered_exceptions(), options=list(pageLength=8, dom='tip'), rownames=FALSE)
+  })
+
+  output$visits_table <- renderDT({
+    datatable(filtered_visits(), options=list(pageLength=10, dom='tip'), rownames=FALSE)
+  })
+}
+
+shinyApp(ui, server)
