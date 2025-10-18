@@ -52,6 +52,8 @@ It also features 140 healthcare providers, of which 40 are doctors and 100 are n
 - Evening Shift: 16:00:00 - 24:00:00
     - 2 Doctors, 5 Nurses Per Wing (7 Healthcare Providers on duty)
 
+
+
 ## 🎯 Objective
 
 The objective of this project is to design a diagnostic tool that monitors the wait times for inpatient care and identifies potential causes for caregiver "lateness" by using data-driven insights and predictive scheduling models. This will help hospitals understand their possible pain points that lead to irregular or wide gaps between caregiver check-ins that affect their patients' perceived quality of care and patient satisfaction.
