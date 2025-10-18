@@ -34,7 +34,7 @@
 | `Days`                 | Integer           | Number of days the patient stays in the hospital (default = 3).                                    |
 | `start_dt`             | POSIXct           | Start datetime of patient stay.                                                                    |
 | `stay_end`             | POSIXct           | End datetime of patient stay.                                                                      |
-| `target_min`           | Integer           | Target interval (minutes) for patient visits based on severity.                                    |
+| `Target_min`           | Integer           | Target interval (minutes) for patient visits based on severity.                                    |
 | `Time_In`              | POSIXct           | Scheduled visit time for each patient.                                                             |
 | `Employee_ID`          | Character         | Unique identifier for the assigned nurse or staff member.                                          |
 | `Wing`                 | Character         | Hospital wing derived from the employee ID (e.g., “MW”).                                           |
@@ -42,3 +42,12 @@
 | `Time_In_Final`        | POSIXct           | Adjusted visit time including lateness corrections.                                                |
 | `ShiftBucket`          | Factor            | Categorical variable representing employee shift (`0_8`, `8_16`, `16_24`).                         |
 | `Number_of_Visit`      | Integer           | Sequential counter representing the visit number per patient.                                      |
+| `modify1`              | Character         | Ensuring proper formatting so we can convert into a datetime datatype later                        |
+| `timeIN `              | Date              | Converts time information into a datetime datatype                                                 |
+| `prev_timeIN `         | Date              | Identifies the last check-in time for a patient                                                    |
+| `difference `          | Integer           | `timeIN` - `prev_timeIN`; indicates how many minutes off you are from the expected frequency interval|
+| `interval_deviation `  | Integer           | `difference` - `Target_min`; indicates the difference or deviation from the expected time interval (in minutes) |
+| `normalized_intervalDiff| Integer          | `interval_deviation` / `Target_min`; normalizes `interval_deviation` to allow data comparison for different frequency intervals|
+| `exp_time`             | Date              | `prev_timeIN` + `Target_min`*60 ; expected timestamp for next check-in                             |
+| `late_by `             | Integer           | The difference (in minutes) from the expected time of check-in to actual check-in time             |
+
