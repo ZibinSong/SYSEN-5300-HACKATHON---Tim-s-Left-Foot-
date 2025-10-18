@@ -55,12 +55,12 @@ The objective of this project is to design a quality control system that monitor
 flowchart TD
     A(Patient checks into hospital) -->|records patient info, e.g. gender, DoB, Patient_ID, Severity, Room Number, expected frequency interval| B[Data]
     B --> C(Caregiver scans into the room for each patient visit)
-    C --> |date, timestamp, and employee ID collected for each scan in| D(Functions)
+    C --> |date, timestamp, and employee ID collected for each scan in| D(Our Functions)
     C --> B
     D --> |calculates time interval between caregiver visits to patients & how late caregivers are to check in with patients|B
     B --> |data cleaning|E(Plots)
-    E --> |visualizes data by subgroups & flags potential factors for lateness|F(Dashboard)
-    F --> G(Informs hospital staff)
+    E --> F(Dashboard)
+    F --> |visualizes data by subgroups & flags potential factors for lateness| G(Informs hospital staff)
 
    style D fill:#f9f,stroke:#333,stroke-width:3px
       style E fill:#f9f,stroke:#333,stroke-width:3px
