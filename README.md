@@ -15,6 +15,23 @@ Hackathon Competition – 10/17/2025 to 10/18/2025
 
 Hospitals require the coordination of many nurses and doctors on each floor for good communication and treatment of patients. However, in your hospital system, patients note wide and irregular gaps and how often nurses and doctors come to check on them during their inpatient care, impacting perceived and actual quality of treatment, and sometimes extending the stay of patients unnecessarily. Your hospital system has commissioned your team to develop a quality control system for tracking and mitigating wait times for inpatient care while on the hospital floor.
 
+## 📖 Table of Contents
+The following section provides a table of contents outlining all components of our GitHub reprository.
+
+
+```mermaid
+graph TD
+    A[Team Members] --> B[Prompt 3: Health Systems]
+    B --> C[Objective]
+    C --> D[Methodology]
+    D --> E[Data Set Explanation]
+    E --> F[Tools and Technologies]
+    F --> G[Expected Outcomes]
+    G --> H[Improvements]
+    H --> I[References]
+
+
+
 ## ℹ️ How to use our code
 
 1. Collect appropriate data
