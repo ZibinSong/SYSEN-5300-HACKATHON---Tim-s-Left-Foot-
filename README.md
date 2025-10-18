@@ -51,6 +51,24 @@ It also features 140 healthcare providers, of which 40 are doctors and 100 are n
 The objective of this project is to design a quality control system that monitors and minimizes wait times for inpatient care through data-driven insights and predictive scheduling models.
 
 ## ⚙️ Methodology / Approach
+~~~mermaid
+flowchart TD
+    A(Patient checks into hospital) -->|records patient info, e.g. gender, DoB, Patient_ID, Severity, Room Number, expected frequency interval| B[Data]
+    B --> C(Caregiver scans into the room for each patient visit)
+    C --> |date, timestamp, and employee ID collected for each scan in| D(Our Functions)
+    C --> B
+    D --> |calculates time interval between caregiver visits to patients & how late caregivers are to check in with patients|B
+    B --> |data cleaning|E(Plots)
+    E --> |visualizes data by subgroups & flags potential factors for lateness|F(Dashboard)
+    F --> G(Informs hospital staff)
+
+   style D fill:#f9f,stroke:#333,stroke-width:3px
+      style E fill:#f9f,stroke:#333,stroke-width:3px
+         style F fill:#f9f,stroke:#333,stroke-width:3px
+                  style B fill:#fff,stroke:#333,stroke-width:3px
+~~~
+
+
 
 Briefly describe how you plan to solve the problem.
 For example:
