@@ -79,11 +79,14 @@ Caregivers (e.g. nurses and doctors) will have unique IDs that can scan into a p
 ~~~mermaid
 flowchart TD
     A(Patient checks into hospital) -->|records patient info, e.g. gender, DoB, Patient_ID, Severity, Room Number, expected frequency interval| B[Data]
-    B --> C(Caregiver scans into the room for each patient visit)
-    C --> |date, timestamp, and employee ID collected for each scan in| D(Functions)
-    C --> B
-    D --> |calculates time interval between caregiver visits to patients & how late caregivers are to check in with patients|B
-    B --> |data cleaning|E(Plots)
+    B --> |1|C(Caregiver scans into the room for each patient visit)
+    C --> |2 
+    date, timestamp, and employee ID collected for each scan in| D(Functions)
+    C --> |2|B
+    D --> |3
+    calculates time interval between caregiver visits to patients & how late caregivers are to check in with patients|B
+    B --> |4
+    data cleaning|E(Plots)
     E --> F(Dashboard)
     F --> |visualizes data by subgroups & flags potential factors for lateness| G(Informs hospital staff)
 
