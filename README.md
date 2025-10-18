@@ -33,13 +33,27 @@ The following section provides a table of contents outlining all components of o
 **[Data Generation/](https://github.com/ZibinSong/SYSEN-5300-HACKATHON---Tim-s-Left-Foot-/tree/main/Data%20Generation%20Folder)**
 - **Data_Generation_CodeGood_Sam_Dataset_Generation.R** — Generates `Good_Sam_visits_Mid_Hospital.csv`  
 - **UCSF_DataSet_Generation.R** — Generates `Dataset_Locked_UCSF - Patient Intake.csv`
+
 ## ℹ️ How to use our Tool
 
-1. Download the data file from GitHub, file name: 
-2. Upload .csv files into HospitalWaitTimesDiagnostic.R
-3. Run the code
-4. Run dashboard??
-   Please help fill this out
+Our diagnostic tool is provided as a self-contained R Shiny application (`ShinyAppV5.R`), which includes all necessary data loading, processing, and visualization logic.
+
+1.  **Download Required Files**:
+    * Download the interactive dashboard file: `ShinyAppV5.R`
+    * Download the necessary dataset files: `Dataset_Locked_UCSF - Patient Intake.csv` and `Good_Sam_visits_Mid_Hospital.csv`
+    * **Note**: The R code (`ShinyAppV5.R`) expects these CSV files to be in the same working directory or the paths specified within the script (e.g., `/cloud/project/`).
+
+2.  **Install Libraries (if needed)**:
+    * Ensure you have the required R packages installed: `shiny`, `shinydashboard`, `plotly`, `DT`, `dplyr`, `tidyr`, `stringr`, `lubridate`, and `readr`.
+    * You can install them by running: `install.packages(c("shiny", "shinydashboard", "plotly", "DT", "dplyr", "tidyr", "stringr", "lubridate", "readr"))`
+
+3.  **Run the Dashboard**:
+    * Open `ShinyAppV5.R` in RStudio or your preferred R environment.
+    * Run the entire script. The last line, `shinyApp(ui, server)`, will automatically launch the interactive dashboard in a web browser or RStudio Viewer pane.
+
+4.  **Analyze and Diagnose**:
+    * Use the filters in the left sidebar (Hospital System, Date Range, Metric, Thresholds) to analyze the data.
+    * Monitor the **Key Performance Indicators (KPIs)**, the **X-bar Control Chart**, and the **Subset Violating Thresholds** table to identify potential root causes for wait time variability.
 
 
 ## 🎯 Objective
