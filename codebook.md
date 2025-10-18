@@ -37,7 +37,35 @@ Patient: Patient_ID, Room_Number, Severity (or triage/level lookalikes), Date, D
 Employee: Employee_ID, Time In, Time Out, optional Shift/Code.
 
 ### Parameters
+
+Visit cadence by severity (minutes):
+TARGET_MIN = c(2=30, 3=60, 4=90, 5=120) (Severity 1 excluded as severity 1 requires constant monitoring and wouldnt cause "lateness").
+
+Per-step jitter: ALLOW_MAX_MIN = 12 (adds Uniform(0,12) minutes to each interval).
+
+Lateness rules (additive, then capped):
+
+ALWAYS_LATE_IDS = c("DSW002","MMW001") → +12–18 min.
+
+SEV5_LATE_RANGE = c(6,12) if Severity == 5.
+
+MW_LATE_RANGE = c(12,15) if employee wing is MW.
+
+PM4_6_MAX = 15 extra minutes during 16:00–17:59.
+
+LATE_CAP = 25 total minute cap.
+
+Shift buckets: "0_8" (0–7:59), "8_16" (8–15:59), "16_24" (16–23:59).
+
 ### Functions
+
+#### Name/parse helpers:
+
+- norm_names(x): trims, lowercases, and snake-cases header names.
+
+- parse_dt(x): robust datetime parser for several formats.
+
+- parse_time_hour(x): extracts integer hour (0–23) from numeric or string times.
 
 ## Functions - Cami
 
