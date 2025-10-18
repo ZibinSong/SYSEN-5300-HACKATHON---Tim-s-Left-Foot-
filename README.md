@@ -72,6 +72,12 @@ flowchart TD
                   style B fill:#fff,stroke:#333,stroke-width:3px
 ~~~
 
+Color legend: 
+- Blue - hospital process steps
+- White - stored data
+- Pink - our code & tool
+
+
 ## 🗂️ Data Set Explanation
 
 The following project includes 2 datasets based on real life hospitals.
