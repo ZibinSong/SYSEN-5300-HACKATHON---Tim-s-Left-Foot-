@@ -130,7 +130,7 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 ## Functions - Cami
 
 | Function(input) | Description | Variables | Output |
-|-----------|--------|-------------|----------|
+|-----------|----------------|-----|------|
 | **adjustTime(data)** | adjusts the data type of the timestamps to enable us to subtract timestamps later on | `modify1`,`timeIN` |adds a column `timeIN` to the data (where the timestamp is now datetime-type data insetad of a character string)|
 | **interval_accuracy(data)** | produces the normalized time accuracy of the intervals between check-ins for a patient. For example, if a patient needs to be checked in on every 2 hours (2-hr intervals), this function indicates how close (how accurate) the actual time intervals are to 2 hours when a caregiver comes to check in on the patient. Because there are different frequencies, or time intervals between check-ins for different patients, this value is normalized. | `prev_timeIN`,`difference`,`interval_deviation`,`normalized_intervalDiff`|adds a column of integers to the data | 
 | **late_min(data)** | calculates how late caregivers are to check in on their patients, in units of minutes. The next expected timestamp is calculated by adding the time interval to the last recorded time check-in for a patient. The next actual timestamp is subtracted by the expected timestamp, and this difference is the number of minutes the caregiver is "late" to check-in on that patient.| `exp_time`,`late_by`|adds a column of integers to the data|
