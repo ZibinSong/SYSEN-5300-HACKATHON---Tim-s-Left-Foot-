@@ -19,10 +19,10 @@ Hospitals require the coordination of many nurses and doctors on each floor for 
 The following section provides a table of contents outlining all components of our GitHub reprository.
 
 
-- **Dataset_Locked_UCSF - Patient Intake.csv** — Patient intake dataset  
+- **patient_visits 7.csv** — Patient intake dataset  
 - **Good_Sam_visits_Mid_Hospital.csv** — Hospital visit dataset  
 - **LICENSE** — Contains the MIT license  
-- **ShinyAppV6.R** — Interactive dashboard (Shiny App)  
+- **ShinyAppV5.R** — Interactive dashboard (Shiny App)  
 - **.gitignore** — Specifies files to ignore in Git  
 - **HospitalWaitTimesDiagnostic.R** — Computes lateness metrics and generates quantities of interest  
 
