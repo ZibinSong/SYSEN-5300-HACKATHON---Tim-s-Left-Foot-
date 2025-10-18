@@ -41,7 +41,8 @@ The second hospital has an estimated 550 patients per 10 days and is based on Go
 1. Surgical wing - SW 
 2. Medical Ward - MW
 3. Maternity Ward - MATW 
-4. Recovery wing - RW 
+4. Recovery wing - RW
+
 and features the following amount of healthcare providers: 140 (of which are 40 doctors and 100 nurses) The following schedule is implemented for the healthcare providers: 
 Schedule 2 Medium Sized hospital: 
 - Morning: 00:00:00 - 8:00:00 1D,3N Per Wing = 4 
