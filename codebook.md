@@ -14,9 +14,12 @@
 
 ## Data Set 2 - Aras
 ### Explanation of code:
-The following code is used to generate the code for Data Set 2
+The script generates a visits dataset from a patient-intake CSV and an employee-roster CSV. It builds scheduled visit times per patient based on triage severity, assigns employees constrained by shift windows, applies lateness mutations under several rules (then caps delay), and writes the final table to CSV and ZIP.
+
 ### Variables
 ### Inputs
+Patient intake CSV: Dataset_MediumSized_Locked - Patient Intake.csv (required).
+
 ### Parameters
 ### Functions
 
