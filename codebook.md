@@ -24,10 +24,10 @@ Variables:
 
 
 Input:
-| File                                                                             | Purpose                             | Required                               | Key Columns                                                                          |
-| -------------------------------------------------------------------------------- | ----------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------ |
-| **Patient Intake CSV**<br>`Dataset_Locked_UCSF – Patient Intake.csv`             | Patient admission and severity info | ✅ Required                             | `Patient_ID`, `Room_Number`, `Severity` (or look-alikes), `Date`, `Days` (default 3) |
-| **Employee Information CSV**<br>`Dataset_Locked_UCSF – Employee Information.csv` | Nurse/employee roster with shifts   | ⚙️ Optional (fallback = synthetic IDs) | `Employee_ID`, `Time In`, `Time Out`, optional `Shift/Code` (`M/D/N`)                |
+| File                                                                             | Purpose                                                        | Key Columns                                                                          |
+| -------------------------------------------------------------------------------- | ----------------------------------- --------------------- | ------------------------------------------------------------------------------------ |
+| **Patient Intake CSV**<br>`Dataset_Locked_UCSF – Patient Intake.csv`             | Patient admission and severity info                              | `Patient_ID`, `Room_Number`, `Severity` (or look-alikes), `Date`, `Days` (default 3) |
+| **Employee Information CSV**<br>`Dataset_Locked_UCSF – Employee Information.csv` | Nurse/employee roster with shifts    (fallback = synthetic IDs) | `Employee_ID`, `Time In`, `Time Out`, optional `Shift/Code` (`M/D/N`)                |
 | **Outputs**                                                                      | Generated visit dataset             | —                                      | `patient_visits.csv`, `patient_visits.zip`                                           |
 
 Parameters:
