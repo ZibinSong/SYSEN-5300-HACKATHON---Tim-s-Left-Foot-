@@ -72,10 +72,8 @@
 | `NormThresholdReached`    | Logical           | TRUE if the subset’s normalized lateness exceeds `NormThreshold`.                                                                      |
 | `avg`                     | Numeric           | Average lateness (minutes or percentage) for a subset.                                                                                 |
 | `sd`                      | Numeric           | Standard deviation of lateness (minutes or percentage) for a subset.                                                                   |
-
-
-
-
-
-
-
+| `Time_Actual`          | Numeric           | Actual Interval. The true elapsed time between visits.    
+| `Is_Non_Compliant`     | Logical           | Defect Flag. Boolean marker used to calculate the Lateness Rate (%) KPI and populate the Exception Log.  
+| `Process_Cpk`          | Numeric           | Process Capability Index. Measures if the process meets the UCL and LCL
+| `Non_Compliance_Rate`  | Numeric           | Defect Rate (Lateness Rate). Percentage of checks that exceeded the maximum allowed deviation.  
+| `OOC_Alerts`           | Integer           | Control Status. Total count of data points violating the $\pm 3\sigma$ control limits on the $\bar{X}$ chart. 
