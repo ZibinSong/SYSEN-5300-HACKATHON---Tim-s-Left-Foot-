@@ -147,5 +147,5 @@ Further exposition on **interval_accuracy(data)**:
 ## Data Analysis - Jackson
 ### Explanation of code:
 
-## UI - Zibin
+## UI - Zibin & Qicheng
 ### Explanation of code:
