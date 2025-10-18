@@ -26,11 +26,11 @@ The following section provides a table of contents outlining all components of o
 - **.gitignore** — Specifies files to ignore in Git  
 - **HospitalWaitTimesDiagnostic.R** — Computes lateness metrics and generates quantities of interest  
 
-**[Documentation Folder](https://github.com/ZibinSong/SYSEN-5300-HACKATHON---Tim-s-Left-Foot-/tree/main/Documentation%20Folder)**
+**[Documentation Folder/](https://github.com/ZibinSong/SYSEN-5300-HACKATHON---Tim-s-Left-Foot-/tree/main/Documentation%20Folder)**
 - **Codebook.md** — Describes all variables and data types used in the code  
 - **Documentation.md** — Contains additional information about the code  
 
-**Data Generation/**
+**[Data Generation/](https://github.com/ZibinSong/SYSEN-5300-HACKATHON---Tim-s-Left-Foot-/tree/main/Data%20Generation%20Folder)**
 - **Data_Generation_CodeGood_Sam_Dataset_Generation.R** — Generates `Good_Sam_visits_Mid_Hospital.csv`  
 - **UCSF_DataSet_Generation.R** — Generates `Dataset_Locked_UCSF - Patient Intake.csv`
 ## ℹ️ How to use our code
