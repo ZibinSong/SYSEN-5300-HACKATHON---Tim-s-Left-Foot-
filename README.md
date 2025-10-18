@@ -93,7 +93,7 @@ Proposed a predictive model for optimal staffing levels.
 
 ## 💻 Tools and Technologies
 
-Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for the hospital to review and address.  
+Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for a potential factor that causes lateness which the hospital can then review and address.  
 
 Languages: R
 
