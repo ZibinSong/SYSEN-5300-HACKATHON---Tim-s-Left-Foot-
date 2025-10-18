@@ -68,11 +68,11 @@ Proposed a predictive model for optimal staffing levels.
 
 ## 💻 Tools and Technologies
 
-Languages: Python, R
+Languages: R
 
-Libraries: pandas, NumPy, matplotlib, seaborn
+Libraries: p
 
-Visualization: Power BI / Tableau
+Visualization: 
 
 Version Control: GitHub
 
