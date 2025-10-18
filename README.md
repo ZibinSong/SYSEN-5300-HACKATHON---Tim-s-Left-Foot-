@@ -29,8 +29,7 @@ The first hospital has an estimated 1100 patients per 10 days and is based on Un
 3. Maternity Ward - MATW 
 4. Recovery wing - RW 
 
-It also features 140 healthcare providers, of which are 40 doctors and 100 are nurses. The following schedule is implemented for the healthcare providers: 
-Schedule 1 Big hospital:
+It also features 140 healthcare providers, of which are 40 doctors and 100 are nurses. The following schedule (Schedule 1 Big Hospital) is implemented for the healthcare providers: 
 
 - Morning: 00:00:00 - 8:00:00 2 Doctors,5 Nurses Per Wing (28 Healthcare Providers on duty)
 - Day Time: 8:00:00 - 16:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
@@ -43,8 +42,7 @@ The second hospital has an estimated 550 patients per 10 days and is based on Go
 3. Maternity Ward - MATW 
 4. Recovery wing - RW
 
-It also features 140 healthcare providers, of which 40 are doctors and 100 are nurses. The following schedule is implemented for the healthcare providers: 
-Schedule 2 Medium Sized hospital: 
+It also features 140 healthcare providers, of which 40 are doctors and 100 are nurses. The following schedule (Schedule 2 Medium Hospital) is implemented for the healthcare providers: 
 - Morning: 00:00:00 - 8:00:00 1D,3N Per Wing = 4 
 - Day Time: 8:00:00 - 16:00:00 2D, 5N Per Wing = 7
 - Evening Time: 16:00:00 - 24:00:00 2D,5N Per Wing = 7
