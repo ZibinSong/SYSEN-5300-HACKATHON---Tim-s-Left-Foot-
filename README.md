@@ -17,6 +17,13 @@ Hospitals require the coordination of many nurses and doctors on each floor for 
 
 ## ℹ️ How to use our code
 
+1. Collect appropriate data
+2. Upload .csv files into HospitalWaitTimesDiagnostic.R
+3. Run the code
+4. Run dashboard??
+   Please help fill this out
+
+
 ## 🎯 Objective
 
 The objective of this project is to design a diagnostic tool that monitors the wait times for inpatient care and identifies potential causes for caregiver "lateness" by using data-driven insights and predictive scheduling models. This will help hospitals understand their possible pain points that lead to irregular or wide gaps between caregiver check-ins that affect their patients' perceived quality of care and patient satisfaction.
