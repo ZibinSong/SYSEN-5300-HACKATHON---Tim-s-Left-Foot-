@@ -89,7 +89,7 @@ Shift buckets: "0_8" (0–7:59), "8_16" (8–15:59), "16_24" (16–23:59).
 
 #### Sampling & attribution:
 
-- sample_emp(bucket): samples an Employee_ID from the bucket-specific roster.
+- .sample_emp(bucket): samples an Employee_ID from the bucket-specific roster.
 
 - extract_wing(emp_id): infers the two-letter wing from the last letters before trailing digits (e.g., "MDMW001" → "MW").
 
