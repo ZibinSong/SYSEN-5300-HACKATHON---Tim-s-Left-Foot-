@@ -144,8 +144,6 @@ Further exposition on **interval_accuracy(data)**:
 - if a caregiver is early, then they're not late and the `normalized_intervalDiff` will be negative. If this is the case, the `normalized_intervalDiff` will be set to 0
 
 
-### Explanation of code:
-
 ## Data Analysis - Jackson
 ### Explanation of code:
 
