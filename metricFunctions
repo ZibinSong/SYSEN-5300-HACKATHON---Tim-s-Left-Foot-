@@ -1,0 +1,85 @@
+
+# functions for calculating and adding quality metrics
+install.packages("dplyr")
+library(dplyr)
+
+# Load Data
+time_data <- read.csv("patient_visits.csv") # read csv file
+
+# Function 1 ##############################################
+# Adjusting data so we can subtract timestamps
+# data must have columns: Time_In, Target_min, Days
+
+adjustTime <- function(data) {
+  data %>%
+    mutate(
+      
+      # need to format correctly to use the timestamps
+      modify1 = gsub("/", "-", Time_In),
+      # modify2 = gsub("/", "-", Time_Out),
+      
+      timeIN  = as.POSIXct(modify1, format = "%Y-%m-%d %H:%M:%S"),
+      # timeOUT = as.POSIXct(modify2, format = "%m-%d-%Y %H:%M:%S"),
+      
+      # number of visits expected, in total
+      # num_visits = Frequency*Days,
+      
+      # Target_min = 1440 / (Num_Visits / Days)
+      
+      # frequency is number of visits per day
+      # so now convert frequency interval into minutes
+      # Target_min = 1440 / Frequency
+    )
+}
+
+time_data <- adjustTime(time_data)
+
+
+# Function 2 ####################################################
+# the time between checkups for patients
+# data must have the columns: Patient_ID, timeIN, Target_min
+
+interval_accuracy = function(data){
+  data %>% group_by(Patient_ID) %>% 
+    arrange(Patient_ID, timeIN) %>%  # Ensure chronological order
+    mutate(
+      
+      # previous check in times
+      prev_timeIN = lag(timeIN),
+      
+      # how many minutes off you are from the expected frequency interval
+      difference = as.numeric(difftime(timeIN, prev_timeIN, units = "mins")),
+      
+      # difference from expected interval  
+      interval_deviation = difference - Target_min,
+      
+      # normalize the value because of different frequency times
+      normalized_intervalDiff = interval_deviation / Target_min, 
+      
+      # if caregiver is early, then they're not late. The interval difference is 0
+      normalized_intervalDiff = ifelse (normalized_intervalDiff < 0, 0, normalized_intervalDiff)
+    ) %>%
+    ungroup()
+}
+
+time_data <- interval_accuracy(time_data)
+
+
+# Function 3 ######################################################
+# how late caregivers are to check in on their patients
+late_min = function(data){
+  data %>% group_by(Patient_ID, timeIN) %>% 
+    mutate(
+      # expected time for next check in 
+      exp_time = prev_timeIN + Target_min*60,
+      
+      # difference from expected time of check in
+      late_by = as.numeric(difftime(timeIN, exp_time, units = "mins")),
+      
+      # if caregiver is early, then they're not late. Late by "0" minutes
+      late_by = ifelse (late_by < 0, 0, late_by)
+      )
+}
+
+time_data <- late_min(time_data)
+
