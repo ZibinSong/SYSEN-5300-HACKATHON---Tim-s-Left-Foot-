@@ -131,14 +131,12 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 
 | Function(input) | Description | Variables | Output |
 |-----------|--------|-------------|----------|
-| **adjustTime(data)** | adjusts the data type of the timestamps to enable us to subtract timestamps later on | 'variables','variables |adds a column to the data (where the timestamp is now datetime-type data insetad of a character string)|
-| **interval_accuracy(data)** | `INFILE_PATIENT`, `INFILE_EMPLOYEE`, `OUTFILE`, `ZIPFILE` | File path variables for input patient and employee data, output files, and compressed archives. |
-| **late_min(data)** | `TARGET_MIN`, `ALLOW_MAX_MIN`, `ALWAYS_LATE_IDS`, `SEV5_LATE_RANGE`, `MW_LATE_RANGE`, `PM4_6_MAX`, `LATE_CAP` | Configuration constants controlling policy thresholds such as minimum targets, allowable delays, specific late ID lists, and late-time ranges or caps. |
+| **adjustTime(data)** | adjusts the data type of the timestamps to enable us to subtract timestamps later on | `modify1`,`timeIN` |adds a column `timeIN` to the data (where the timestamp is now datetime-type data insetad of a character string)|
+| **interval_accuracy(data)** | produces the normalized time accuracy of the intervals between check-ins for a patient. For example, if a patient needs to be checked in on every 2 hours (2-hr intervals), this function indicates how close (how accurate) the actual time intervals are to 2 hours when a caregiver comes to check in on the patient. Because there are different frequencies, or time intervals between check-ins for different patients, this value is normalized. | `prev_timeIN`,`difference`,`interval_deviation`,`normalized_intervalDiff`|adds a column of integers to the data | 
+| **late_min(data)** | calculates how late caregivers are to check in on their patients, in units of minutes. The next expected timestamp is calculated by adding the time interval to the last recorded time check-in for a patient. The next actual timestamp is subtracted by the expected timestamp, and this difference is the number of minutes the caregiver is "late" to check-in on that patient.| `exp_time`,`late_by`|adds a column of integers to the data|
 
 
 ### interval_accuracy(data)
-
-Input: data
 
 What it does: produces the normalized time accuracy of the intervals between check-ins for a patient. For example, if a patient needs to be checked in on every 2 hours (2-hr intervals), this function indicates how close (how accurate) the actual time intervals are to 2 hours when a caregiver comes to check in on the patient. Because there are different frequencies, or time intervals between check-ins for different patients, this value is normalized. 
 - check-in time ("timeIN") is subtracted by the previous check-in time for a patient which indicates how many minutes off you are from the expected frequency interval --> "difference"
@@ -146,15 +144,9 @@ What it does: produces the normalized time accuracy of the intervals between che
 - normalize the "interval_deviation" by dividing by the expected time interval
 - if a caregiver is early, then they're not late and the normalized interval_deviation will be negative. If this is the case, the interval difference will be set to 0
 
-Output: adds a column of integers to the data 
-
 ### late_min(data)
 
-Input: data
-
-What it does: Calculates how late caregivers are to check in on their patients, in units of minutes. The next expected timestamp is calculated by adding the time interval to the last recorded time check-in for a patient. The next actual timestamp is subtracted by the expected timestamp, and this difference is the number of minutes the caregiver is "late" to check-in on that patient.
-
-Output: adds a column of integers to the data
+What it does: calculates how late caregivers are to check in on their patients, in units of minutes. The next expected timestamp is calculated by adding the time interval to the last recorded time check-in for a patient. The next actual timestamp is subtracted by the expected timestamp, and this difference is the number of minutes the caregiver is "late" to check-in on that patient.
 
 
 ### Explanation of code:
