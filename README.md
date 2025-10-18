@@ -20,7 +20,7 @@ The following section provides a table of contents outlining all components of o
 
 
 - **patient_visits 7.csv** — Patient intake dataset  
-- **Good_Sam_visits_Mid_Hospital.csv** — Hospital visit dataset  
+- **MedSize_visits.csv** — Hospital visit dataset  
 - **LICENSE** — Contains the MIT license  
 - **ShinyAppV5.R** — Interactive dashboard (Shiny App)  
 - **.gitignore** — Specifies files to ignore in Git  
@@ -31,8 +31,8 @@ The following section provides a table of contents outlining all components of o
 - **Documentation.md** — Contains additional information about the code  
 
 **[Data Generation/](https://github.com/ZibinSong/SYSEN-5300-HACKATHON---Tim-s-Left-Foot-/tree/main/Data%20Generation%20Folder)**
-- **Data_Generation_CodeGood_Sam_Dataset_Generation.R** — Generates `Good_Sam_visits_Mid_Hospital.csv`  
-- **UCSF_DataSet_Generation.R** — Generates `Dataset_Locked_UCSF - Patient Intake.csv`
+- **Data_Generation_CodeGood_Sam_Dataset_Generation.R** — Generates `MedSize_visits.csv`  
+- **UCSF_DataSet_Generation.R** — Generates `patient_visits 7.csv`
 
 ## ℹ️ How to use our Tool
 
