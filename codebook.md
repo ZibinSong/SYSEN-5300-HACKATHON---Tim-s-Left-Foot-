@@ -28,6 +28,28 @@ Employee: Employee_ID, Time In, Time Out, optional Shift/Code.
 ### Functions
 
 ## Functions - Cami
+
+## Functions in R
+
+### adjustTime(data)
+
+Input: data
+
+What it does: adjusts the dated, timestamp data to enable us to subtract timestamps later on
+
+Output: an additional column to the data where the dated, timestamp data is now datetime type data (instead of a character string)
+
+### interval_accuracy(data)
+
+Input: data
+
+What it does: produces the normalized time accuracy of the intervals between check-ins for a patient. For example, if a patient needs to be checked in on every 2 hours (2-hr intervals), this function indicates how close (how accurate) the actual time intervals are to 2 hours when a caregiver comes to check in on the patient. Because there are different frequencies, or time intervals between check-ins for different patients, this value is normalized. 
+
+Output: an additional column to the data that contains this normalized time accuracy data (integer)
+
+### late_min(data)
+stuffffffffff
+
 ### Explanation of code:
 
 ## Data Analysis - Jackson
