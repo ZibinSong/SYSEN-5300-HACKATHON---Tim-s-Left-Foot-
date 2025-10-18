@@ -5,27 +5,28 @@
 #library(truncnorm)
 #library(ggplot2)
 
-visits = read.csv("metrics 4.csv")
+visits = read.csv("medsize1.csv")
 visits$timeIN  = as.POSIXct(visits$timeIN, format = "%Y-%m-%d %H:%M:%S")
 visits$timeIN = format(visits$timeIN, "%H")
 visits$timeIN = as.integer(visits$timeIN)
 
 #visits %>% distinct(Employee_ID)
 
-testynorm = mean(visits$normalized_intervalDiff, na.rm = TRUE)
-testyraw = mean(visits$late_by, na.rm = TRUE)
-testysub = ReturnSelected(visits, TimeIN = 2)
-testysubnorm = mean(testysub$normalized_intervalDiff, na.rm = TRUE)
-testysubraw = mean(testysub$late_by, na.rm = TRUE)
-testysubrawsd = sd(testysub$late_by, na.rm = TRUE)
-testysubnormsd = sd(testysub$normalized_intervalDiff, na.rm = TRUE)
-testyNORMSCORE = (testysubnorm-testynorm)/testysubnormsd
-testyRAWSCORE = (testysubraw-testyraw)/testysubrawsd
-LatenessScoreNorm(globalNorm = testyavg, SubData = ReturnSelected(visits, TimeIN = 2))
-LatenessScoreRaw(globalAvg = testyraw, SubData = ReturnSelected(visits, TimeIN = 2))
+#testynorm = mean(visits$normalized_intervalDiff, na.rm = TRUE)
+#testyraw = mean(visits$late_by, na.rm = TRUE)
+#testysub = ReturnSelected(visits, TimeIN = 2)
+#testysubnorm = mean(testysub$normalized_intervalDiff, na.rm = TRUE)
+#testysubraw = mean(testysub$late_by, na.rm = TRUE)
+#testysubrawsd = sd(testysub$late_by, na.rm = TRUE)
+#testysubnormsd = sd(testysub$normalized_intervalDiff, na.rm = TRUE)
+#testyNORMSCORE = (testysubnorm-testynorm)/testysubnormsd
+#testyRAWSCORE = (testysubraw-testyraw)/testysubrawsd
+#LatenessScoreNorm(globalNorm = testyavg, SubData = ReturnSelected(visits, TimeIN = 2))
+#LatenessScoreRaw(globalAvg = testyraw, SubData = ReturnSelected(visits, TimeIN = 2))
 
-Main(Data = visits, useNORM = FALSE, Threshold = 0.00001)
-CompareGraphRaw(visits, ReturnSelected(visits, TimeIN = 6), bins = 50)
+Main(Data = visits, useNORM = FALSE, Threshold = 1)
+CompareGraphRaw(visits, ReturnSelected(visits, WingIN = "MW"), bins = 50)
+CompareGraphNorm(visits, ReturnSelected(visits, WingIN = "MW"), bins = 50)
 
 ################################################################################
 
@@ -48,15 +49,19 @@ Main <- function(Data, useNORM = FALSE, Threshold = 3){
     ProblemSeverities = SeverityProblems(Data = Data, Threshold = Threshold, useNORM = useNORM, global = GlobalAvg)
   }
   # Print Problem Categories
+  cat("\n\nProblem Times:\n")
   for (t in ProblemTimes) {
     cat(sprintf("%d:00 - %d:00\n", t, t + 1))
   }
+  cat("\nProblem Employees:\n")
   for (e in ProblemEmployees) {
     print(e)
   }
+  cat("\nProblem Wings:\n")
   for (w in ProblemWings) {
     print(w)
   }
+  cat("\nProblem Severities:\n")
   for (t in ProblemSeverities) {
     print(t)
   }
@@ -120,18 +125,16 @@ TimeProblems <- function(Data, Threshold = 0, useNORM = FALSE, global = 0){
   if(useNORM){
     t_problems = list()
     for (t in 0:23){
-      if(abs(LatenessScoreNorm(globalNorm = global, SubData = ReturnSelected(Data, TimeIN = t))) > Threshold){
-        append(t_problems, t)
-        print("132")
+      if(LatenessScoreNorm(globalNorm = global, SubData = ReturnSelected(Data, TimeIN = t)) > Threshold){
+        t_problems = append(t_problems, t)
       }
     }
   }
   else{
     t_problems = list()
     for (t in 0:23){
-      if(abs(LatenessScoreRaw(globalAvg = global, SubData = ReturnSelected(Data, TimeIN = t))) > Threshold){
-        print("132")
-        append(t_problems, t)
+      if(LatenessScoreRaw(globalAvg = global, SubData = ReturnSelected(Data, TimeIN = t)) > Threshold){
+        t_problems = append(t_problems, t)
       }
     }
   }
@@ -144,8 +147,8 @@ EmployeeProblems <- function(Data, Threshold = 0, useNORM = FALSE, global = 0){
     e_problems = list()
     e_split = split(Data, Data$Employee_ID)
     for(e in e_split){
-      if(abs(LatenessScoreNorm(globalNorm = global, SubData = e)) > Threshold){
-        append(e_problems, e_split$Employee_ID[1])
+      if(LatenessScoreNorm(globalNorm = global, SubData = e) > Threshold){
+        e_problems[[length(e_problems) + 1]] <- unique(e$Employee_ID)
       }
     }
   }
@@ -153,8 +156,8 @@ EmployeeProblems <- function(Data, Threshold = 0, useNORM = FALSE, global = 0){
     e_problems = list()
     e_split = split(Data, Data$Employee_ID)
     for(e in e_split){
-      if(abs(LatenessScoreRaw(globalAvg = global, SubData = e)) > Threshold){
-        append(e_problems, e_split$Employee_ID[1])
+      if(LatenessScoreRaw(globalAvg = global, SubData = e) > Threshold){
+        e_problems[[length(e_problems) + 1]] <- unique(e$Employee_ID)
       }
     }
   }
@@ -167,7 +170,7 @@ WingProblems <- function(Data, Threshold = 0, useNORM = FALSE, global = 0){
     w_problems = list()
     for (w in list('MW', 'RW', 'SW', 'MATW')){
       if(LatenessScoreNorm(globalNorm = global, SubData = ReturnSelected(Data, WingIN = w)) > Threshold){
-        append(w_problems, w)
+        w_problems = append(w_problems, w)
       }
     }
   }
@@ -175,7 +178,7 @@ WingProblems <- function(Data, Threshold = 0, useNORM = FALSE, global = 0){
     w_problems = list()
     for (w in list('MW', 'RW', 'SW', 'MATW')){
       if(LatenessScoreRaw(globalAvg = global, SubData = ReturnSelected(Data, WingIN = w)) > Threshold){
-        append(w_problems, w)
+        w_problems = append(w_problems, w)
       }
     }
   }
@@ -188,7 +191,7 @@ SeverityProblems <- function(Data, Threshold = 0, useNORM = FALSE, global = 0){
     t_problems = list()
     for (t in list(2, 3, 4, 5)){
       if(LatenessScoreNorm(globalNorm = global, SubData = ReturnSelected(Data = Data, SeverityIN = t)) > Threshold){
-        append(t_problems, t)
+        t_problems = append(t_problems, t)
       }
     }
   }
@@ -196,7 +199,7 @@ SeverityProblems <- function(Data, Threshold = 0, useNORM = FALSE, global = 0){
     t_problems = list()
     for (t in list(2, 3, 4, 5)){
       if(LatenessScoreRaw(globalAvg = global, SubData = ReturnSelected(Data = Data, SeverityIN = t)) > Threshold){
-        append(t_problems, t)
+        t_problems = append(t_problems, t)
       }
     }
   }
