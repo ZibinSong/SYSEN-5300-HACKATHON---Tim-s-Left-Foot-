@@ -24,9 +24,9 @@ The following schedule is implemented for the healthcare providers:
 
 Schedule  1 Big hospital:
 
-00:00:00 - 8:00:00 2 Doctors,5 Nurses Per Wing (28 Healthcare Providers on duty)
-8:00:00 - 16:00:00  4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
-16:00:00 - 24:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
+- Morning: 00:00:00 - 8:00:00 2 Doctors,5 Nurses Per Wing (28 Healthcare Providers on duty)
+- Day Time: 8:00:00 - 16:00:00  4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
+- Evening Time: 16:00:00 - 24:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
 
 
 ### Data Set 2:
@@ -40,11 +40,12 @@ The second hospital has an estimated 550 patients per 10 days and is based on Go
 and features the following amount of healthcare providers: 140 (of which are 40 doctors and 100 nurses) 
 The following schedule is implemented for the healthcare providers:
 
-Schedule  1 Big hospital:
 
-00:00:00 - 8:00:00 2 Doctors,5 Nurses Per Wing (28 Healthcare Providers on duty)
-8:00:00 - 16:00:00  4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
-16:00:00 - 24:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
+Schedule 2 Medium Sized hospital:
+
+- Morning: 00:00:00 - 8:00:00 1D,3N Per Wing = 4
+- Day Time: 8:00:00 - 16:00:00  2D, 5N Per Wing = 7
+- Evening Time: 16:00:00 - 24:00:00 2D,5N Per Wing  = 7
 
 
 https://www.goodsamsanjose.com/?sc_lang=en-US
