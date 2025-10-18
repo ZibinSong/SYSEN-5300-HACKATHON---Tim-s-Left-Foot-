@@ -100,11 +100,11 @@ It also features 72 healthcare providers. The following schedule (Schedule 2 Med
     - 7 Healthcare providers Per Wing (7 Healthcare Providers on duty)
  
 
-Furthermore, we also added a bias to the second data set. The following rules were implemented into the second data set in order to check the dashboards accuracy and detection:
-- Employee（DSW002, MMW001 always late for random between 12-18 minutes)
-- Severity level (Healthcare Providers who serve for severity 5 have higher chance to get late (6-12 minutes))
-- Wing (Medical Ward (MW) usually recieves late (12-15 minutes) responses) 
-- Time of day (during 4:00PM to 6PM, all employee have higher chance to be late, up to max. 15 minutes) due to peak times
+Furthermore, we also added a bias to the second data set. The following rules were implemented into the second data set in order to check our tool's accuracy and detection:
+- Employees DSW002 and MMW001 are always late for random between 12-18 minutes
+- Severity level (Healthcare Providers who serve for severity 5 have higher chance to be late by 6-12 minutes)
+- Wing (Medical Ward (MW) usually recieves late responses by 12-15 minutes) 
+- Time of day (from 4:00PM to 6:00PM, all employees have a higher chance to be late, up to max of 15 minutes) due to peak times
 
 Furthermore, we added a maximum possible delay of 25 minutes. 
 
