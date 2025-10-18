@@ -4,26 +4,25 @@ Hackathon Competition – 10/17/2025
 
 ## 🧠 Team Members
 
-Zibin Song
-Jackson Kollmorgen
-Qicheng Fu
-Cami Chan
-Aras Ozdemir
+- Zibin Song
+- Jackson Kollmorgen
+- Qicheng Fu
+- Cami Chan
+- Aras Ozdemir
 
 
 ## 🧩 Prompt
 
-(Keep what you wrote here — it’s clear and descriptive!)
+Prompt 3: Health Systems
+Hospitals require the coordination of many nurses and doctors on each floor for good communication and treatment of patients. However, in your hospital system, patients note wide and irregular gaps and how often nurses and doctors come to check on them during their inpatient care, impacting perceived and actual quality of treatment, and sometimes extending the stay of patients unnecessarily. Your hospital system has commissioned your team to develop a quality control system for tracking and mitigating wait times for inpatient care while on the hospital floor.
+
+
 
 ## 🗂️ Data Set Explanation
 
-(Keep your Dataset 1 and Dataset 2 descriptions exactly as they are — they’re excellent.)
-
-You could make them a little more readable by formatting numeric data in tables or bullet points (optional).
+The following project includes 2 datasets based on real life hospitals. ### Data Set 1: The first hospital has an estimated 1100 patients per 10 days and is based on University of San Francisco (UCSF) Hospital. it includes four wings: 1. Surgical wing - SW 2. Medical Ward - MW 3. Maternity Ward - MATW 4. Recovery wing - RW and features the following amount of healthcare providers: 140 (of which are 40 doctors and 100 nurses) The following schedule is implemented for the healthcare providers: Schedule 1 Big hospital: - Morning: 00:00:00 - 8:00:00 2 Doctors,5 Nurses Per Wing (28 Healthcare Providers on duty) - Day Time: 8:00:00 - 16:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty) - Evening Time: 16:00:00 - 24:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty) ### Data Set 2: The second hospital has an estimated 550 patients per 10 days and is based on Good Samaritan Hospital in San Jose, California. it includes four wings: 1. Surgical wing - SW 2. Medical Ward - MW 3. Maternity Ward - MATW 4. Recovery wing - RW and features the following amount of healthcare providers: 140 (of which are 40 doctors and 100 nurses) The following schedule is implemented for the healthcare providers: Schedule 2 Medium Sized hospital: - Morning: 00:00:00 - 8:00:00 1D,3N Per Wing = 4 - Day Time: 8:00:00 - 16:00:00 2D, 5N Per Wing = 7 - Evening Time: 16:00:00 - 24:00:00 2D,5N Per Wing = 7
 
 ## 🎯 Objective
-
-Explain what your team aims to achieve. For example:
 
 The objective of this project is to design a quality control system that monitors and minimizes wait times for inpatient care through data-driven insights and predictive scheduling models.
 
