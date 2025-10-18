@@ -56,9 +56,9 @@ It also features 140 healthcare providers, of which 40 are doctors and 100 are n
 
 The objective of this project is to design a diagnostic tool that monitors the wait times for inpatient care and identifies potential causes for caregiver "lateness" by using data-driven insights and predictive scheduling models. This will help hospitals understand their possible pain points that lead to irregular or wide gaps between caregiver check-ins that affect their patients' perceived quality of care and patient satisfaction.
 
-faciliatates their root-case analysis. 
-
-The objective of this project is to design a quality control system that monitors and minimizes wait times for inpatient care through data-driven insights and predictive scheduling models.
+stuff - delete later
+- faciliatates their root-case analysis
+- The objective of this project is to design a quality control system that monitors and minimizes wait times for inpatient care through data-driven insights and predictive scheduling models.
 
 ## ⚙️ Methodology / Approach
 When a patient checks in, their basic information and demographics will be recorded. They will also be assigned a severity level based on the Emergency Severity Index (ESI) system which is the triage system used in the U.S. to categorize and prioritize patients based on their level of emergency and current condition. Hospitals will be able to determine how frequently each patient will be checked in on (e.g. every 2 hours, every 30 minutes). 
