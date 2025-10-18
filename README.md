@@ -87,7 +87,7 @@ flowchart TD
     calculates time interval between caregiver visits to patients & how late caregivers are to check in with patients|B
     B --> |4
     data cleaning|E(Plots)
-    E --> F(Dashboard)
+    E --> F[Dashboard]
     F --> |visualizes data by subgroups & flags potential factors for lateness| G(Informs hospital staff)
 
    style D fill:#f9f,stroke:#333,stroke-width:3px
