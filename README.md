@@ -120,11 +120,7 @@ Our tool will enable hospitals to easily collect and view their patients' wait t
 
 ## 📊 Expected Outcomes
 
-Reduced patient wait-time variability.
-
-Improved staff utilization rates.
-
-Increased patient satisfaction scores through better coverage.
+This dashboard tool will aid hospitals in performing root-cause analysis for their patient wait-time variability. This helps hospitals reduce patient wait-time variability and dissatisfaction, and track employee performance.
 
 
 ## 📜 References
