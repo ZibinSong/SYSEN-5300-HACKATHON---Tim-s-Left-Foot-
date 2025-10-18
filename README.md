@@ -30,9 +30,12 @@ The first hospital has an estimated 1100 patients per 10 days and is based on Un
 
 It also features 140 healthcare providers, of which are 40 doctors and 100 are nurses. The following schedule (Schedule 1 Big Hospital) is implemented for the healthcare providers: 
 
-- Morning: 00:00:00 - 8:00:00 2 Doctors,5 Nurses Per Wing (28 Healthcare Providers on duty)
-- Day Time: 8:00:00 - 16:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
-- Evening Time: 16:00:00 - 24:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
+- Morning Shift: 00:00:00 - 8:00:00
+    - 2 Doctors, 5 Nurses Per Wing (28 Healthcare Providers on duty)
+- Day Shift: 8:00:00 - 16:00:00
+    - 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
+- Evening Shift: 16:00:00 - 24:00:00
+    - 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
 
 ### 📘 Data Set 2: 
 The second hospital has an estimated 550 patients per 10 days and is based on Good Samaritan Hospital in San Jose, California. It includes four wings: 
@@ -42,9 +45,12 @@ The second hospital has an estimated 550 patients per 10 days and is based on Go
 4. Recovery wing - RW
 
 It also features 140 healthcare providers, of which 40 are doctors and 100 are nurses. The following schedule (Schedule 2 Medium Hospital) is implemented for the healthcare providers: 
-- Morning: 00:00:00 - 8:00:00 1D,3N Per Wing = 4 
-- Day Time: 8:00:00 - 16:00:00 2D, 5N Per Wing = 7
-- Evening Time: 16:00:00 - 24:00:00 2D,5N Per Wing = 7
+- Morning Shift: 00:00:00 - 8:00:00
+    - 1 Doctor, 3 Nurses Per Wing (4 Healthcare Providers on duty)
+- Day Shift: 8:00:00 - 16:00:00
+    - 2 Doctors, 5 Nurses Per Wing (7 Healthcare Providers on duty)
+- Evening Shift: 16:00:00 - 24:00:00
+    - 2 Doctors, 5 Nurses Per Wing (7 Healthcare Providers on duty)
 
 ## 🎯 Objective
 
