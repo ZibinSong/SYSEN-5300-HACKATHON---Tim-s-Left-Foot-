@@ -39,24 +39,16 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 
 ### Parameters
 
-Visit cadence by severity (minutes):
-TARGET_MIN = c(2=30, 3=60, 4=90, 5=120) (Severity 1 excluded as severity 1 requires constant monitoring and wouldnt cause "lateness").
-
-Per-step jitter: ALLOW_MAX_MIN = 12 (adds Uniform(0,12) minutes to each interval).
-
-Lateness rules (additive, then capped):
-
-ALWAYS_LATE_IDS = c("DSW002","MMW001") → +12–18 min.
-
-SEV5_LATE_RANGE = c(6,12) if Severity == 5.
-
-MW_LATE_RANGE = c(12,15) if employee wing is MW.
-
-PM4_6_MAX = 15 extra minutes during 16:00–17:59.
-
-LATE_CAP = 25 total minute cap.
-
-Shift buckets: "0_8" (0–7:59), "8_16" (8–15:59), "16_24" (16–23:59).
+| Category | Items | Description |
+|-----------|--------|-------------|
+| **Visit Cadence by Severity (minutes)** | `TARGET_MIN = c(2=30, 3=60, 4=90, 5=120)` | Defines target visit intervals (in minutes) based on patient severity level. Severity 1 is excluded, as it requires continuous monitoring and cannot be “late.” |
+| **Per-Step Jitter** | `ALLOW_MAX_MIN = 12` | Adds random jitter of up to 12 minutes (`Uniform(0,12)`) to each visit interval for variability. |
+| **Lateness Rule – Always Late IDs** | `ALWAYS_LATE_IDS = c("DSW002","MMW001") → +12–18 min` | Specific employees always incur an additional 12–18 minutes of lateness to simulate known delays. |
+| **Lateness Rule – Severity 5 Patients** | `SEV5_LATE_RANGE = c(6,12)` | Adds 6–12 minutes of delay for patients with Severity 5 classification. |
+| **Lateness Rule – MW Wing Employees** | `MW_LATE_RANGE = c(12,15)` | Adds 12–15 minutes of delay for employees assigned to the MW (Medical Wing). |
+| **Time-Dependent Lateness Cap** | `PM4_6_MAX = 15` | Adds up to 15 extra minutes for visits occurring between 16:00–17:59. |
+| **Overall Lateness Limit** | `LATE_CAP = 25` | Caps total accumulated lateness at 25 minutes to prevent excessive delay accumulation. |
+| **Shift Buckets** | `"0_8"` (0–7:59), `"8_16"` (8–15:59), `"16_24"` (16–23:59) | Defines time-of-day groupings for employee shifts to categorize activity and lateness by period. |
 
 ### Functions
 
