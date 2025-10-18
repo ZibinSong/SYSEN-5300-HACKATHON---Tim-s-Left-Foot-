@@ -1,4 +1,4 @@
-# SYSEN-5300-HACKATHON — Tim’s Left Foot
+# SYSEN 5300-HACKATHON — Tim’s Left Foot
 
 Hackathon Competition – 10/17/2025 to 10/18/2025
 
@@ -34,7 +34,7 @@ The objective of this project is to design a diagnostic tool that monitors the w
 6. Visualize the resulting data using ggplot in R
 7. Create visual dashboard to display wait times & notifications 
 
-### Exposition on Process Flow
+### Exposition of Process Flow
 When a patient checks in, their basic information and demographics will be recorded. They will also be assigned a severity level based on the Emergency Severity Index (ESI) system which is the triage system used in the U.S. to categorize and prioritize patients based on their level of emergency and current condition. Hospitals will be able to determine how frequently each patient will be checked in on (e.g. every 2 hours, every 30 minutes). 
 
 - *Note: Severity Level 1 requires constant monitoring of patients and is therefore excluded from our datasets.
@@ -111,11 +111,12 @@ Furthermore, we added a maximum possible delay of 25 minutes.
 
 ## 💻 Tools and Technologies
 
-Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for a potential factor that causes lateness which the hospital can then review and address.  
-
 Languages: R
 
 Version Control: GitHub
+
+Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for a potential factor that causes lateness which the hospital can then review and address.  
+
 
 ## 📊 Expected Outcomes
 
@@ -124,8 +125,6 @@ Reduced patient wait-time variability.
 Improved staff utilization rates.
 
 Increased patient satisfaction scores through better coverage.
-
-
 
 
 ## 📜 References
