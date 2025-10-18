@@ -114,10 +114,6 @@ Our tool will enable hospitals to easily collect and view their patients' wait t
 
 Languages: R
 
-Libraries: p
-
-Visualization: 
-
 Version Control: GitHub
 
 ## 📊 Expected Outcomes
