@@ -65,7 +65,19 @@ Furthermore, we added a maximum possible delay of 25 minutes.
 The objective of this project is to design a diagnostic tool that monitors the wait times for inpatient care and identifies potential causes for caregiver "lateness" by using data-driven insights and predictive scheduling models. This will help hospitals understand their possible pain points that lead to irregular or wide gaps between caregiver check-ins that affect their patients' perceived quality of care and patient satisfaction.
 
 
-## ⚙️ Methodology / Approach
+## ⚙️ Methodology
+
+
+### Approach:
+1. Create a time-tracking system with scanning cards to monitor caregiver visiting times to patients
+2. Outline the process flow, required / collected data inputs, what we want to do with the data, what we want to output
+3. Create example datasets for proof of concept
+4. Create calculation functions in R
+5. Analyze patient wait-time data using data inputs from datasets & the functions created in R
+6. Visualize the resulting data using ggplot in R
+7. Create visual dashboard to display wait times & notifications 
+
+### Exposition on Process Flow
 When a patient checks in, their basic information and demographics will be recorded. They will also be assigned a severity level based on the Emergency Severity Index (ESI) system which is the triage system used in the U.S. to categorize and prioritize patients based on their level of emergency and current condition. Hospitals will be able to determine how frequently each patient will be checked in on (e.g. every 2 hours, every 30 minutes). 
 
 - *Note: Severity Level 1 requires constant monitoring of patients and is therefore excluded from our datasets.
@@ -96,18 +108,6 @@ flowchart TD
                   style B fill:#fff,stroke:#333,stroke-width:3px
 ~~~
 
-
-
-Briefly describe how you plan to solve the problem.
-For example:
-
-Analyzed patient wait-time data using Python (pandas, NumPy).
-
-Implemented time-based and resource allocation models.
-
-Developed visual dashboards using Power BI or Matplotlib to track provider coverage and response times.
-
-Proposed a predictive model for optimal staffing levels.
 
 ## 💻 Tools and Technologies
 
