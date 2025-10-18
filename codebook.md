@@ -129,8 +129,6 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 
 ## Functions - Cami
 
-## Functions in R
-
 ### adjustTime(data)
 
 Input: data
