@@ -149,6 +149,7 @@ The **SigmaView** application is an R Shiny dashboard designed for **Six Sigma P
 Key features include:
 * **Safe Data Loader**: The application uses robust functions (`apply_name_map` and `load_visits_one`) to read CSV files and automatically map common variations of column names (e.g., "Time In," "timestamp") to standard internal names (e.g., `Time_In`), preventing errors caused by mismatched headers.
 * **Core Metrics**: It runs the `Generate` pipeline to calculate `interval_deviation`, `normalized_intervalDiff`, and `late_by` for each patient visit, based on the **`Target_min`**.
+* **Process Violation Scoring **: The dashboard calculates group-level average deviation metrics and uses the four `*Problems` functions to identify groups (e.g., a specific employee or time of day) whose performance **exceeds user-defined raw and normalized thresholds** compared to the overall slice mean.
 * **Interactive Dashboard**: The UI provides filters to slice data by **Hospital System**, **Time Shift**, **Severity**, **Wing**, **Date Range**, and the **Metric** of interest.
 * **Process Control Visualization**: The dashboard displays **Key Performance Indicators (KPIs)**, including the $\text{Cpk}$ (Process Capability Index), Lateness Rate, Mean/Standard Deviation, and an **X-bar Control Chart** to monitor the process mean over time and identify Out-of-Control (OOC) points ($\pm 3\sigma$).
 
@@ -169,7 +170,7 @@ Key features include:
 
 ***
 
-### Functions (Specific to the UI/Loader)
+### Functions (Specific to the UI/Loader/Scoring)
 
 | Function (Input) | Purpose |
 | :--- | :--- |
@@ -177,6 +178,10 @@ Key features include:
 | **`apply_name_map(df, map)`** | **Robust Column Loader**: Renames existing column aliases (e.g., "Time In") in a data frame `df` to a set of standard names (e.g., `Time_In`). Ensures all standard columns exist, filling with `NA` if an alias isn't found. |
 | **`load_visits_one(path, label)`** | **Robust File Loader**: Reads one CSV, applies `apply_name_map`, handles missing `Patient_ID` by creating surrogates, runs the **`Generate`** pipeline, and adds source, shift, and date columns. |
 | **`cpk_calc(mu, sigma_s, usl=5, lsl=-5)`** | Calculates the **Process Capability Index ($\text{Cpk}$)** for the selected metric, assuming $USL=+5$ and $LSL=-5$ minutes as control limits for deviation. |
+| **`TimeProblems(...)`** | **Scorer**: Identifies time-based groups (by hour, `timeIN_hr`) whose average deviation exceeds the user-defined raw and normalized thresholds relative to the global mean. |
+| **`EmployeeProblems(...)`** | **Scorer**: Identifies specific employees whose average deviation exceeds the user-defined raw and normalized thresholds relative to the global mean. |
+| **`WingProblems(...)`** | **Scorer**: Identifies hospital wings/units whose average deviation exceeds the user-defined raw and normalized thresholds relative to the global mean. |
+| **`SeverityProblems(...)`** | **Scorer**: Identifies severity groups (1-5) whose average deviation exceeds the user-defined raw and normalized thresholds relative to the global mean. |
 
 ***
 
@@ -189,6 +194,8 @@ Key features include:
 | **`secondary_value`** | Sidebar | `shift`, `Severity`, or `Wing` | Selects a specific group to view (e.g., "Morning" shift or "Severity 3"). Choices are dynamically populated based on `primary_filter`. |
 | **`daterange`** | Sidebar | `date` | Sets the start and end dates for the analysis. |
 | **`metric_col`** | Sidebar | `interval_deviation`, `late_by`, or `normalized_intervalDiff` | Selects the metric to be used for KPI calculations and the Control Chart Y-axis. |
+| **`raw_thresh`** | Sidebar | N/A | **New.** Sets the threshold (in minutes) for **Raw Deviation** difference (Group Average - Global Average) used by the `*Problems` scoring functions. |
+| **`norm_thresh`** | Sidebar | N/A | **New.** Sets the threshold for **Normalized Deviation** difference (Group Average - Global Average) used by the `*Problems` scoring functions. |
 
 ***
 
@@ -202,5 +209,5 @@ Key features include:
 | **`kpi_mean`**, **`kpi_sd`** | Text | KPIs | Mean ($\mu$) and Standard Deviation ($\sigma$) of the currently selected metric. |
 | **`kpi_avg_actual`** | Text | KPIs | Average actual interval time, calculated as `Target_min` + Mean of positive deviations. |
 | **`control_chart`** | Plotly | Chart | X-bar Control Chart: Plots the **Daily Mean** of the selected metric with Upper Control Limit (UCL), Lower Control Limit (LCL), and the overall Mean. |
-| **`exception_table`** | Data Table | Log | Logs the individual visit events that are flagged as Out-of-Control (OOC) on the $\pm 3\sigma$ chart. |
+| **`violation_table`** | Data Table | Log | **Updated.** Logs groups (e.g., employee IDs, time slots) whose **average** deviation exceeds the user-defined `raw_thresh` or `norm_thresh` relative to the current slice's global mean. |
 | **`visits_table`** | Data Table | Preview | A complete, filtered preview of the underlying data set. |
