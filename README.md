@@ -19,21 +19,20 @@ Hospitals require the coordination of many nurses and doctors on each floor for 
 The following section provides a table of contents outlining all components of our GitHub reprository.
 
 
-├── Dataset_Locked_UCSF - Patient Intake.csv         # Patient intake dataset
-├── Good_Sam_visits_Mid_Hospital.csv                 # Hospital visit dataset
-├── LICENSE                                          # MIT license
-├── ShinyAppV4.R                                     # Interactive dashboard (Shiny App)
-├── .gitignore                                       # Specifies files to ignore in Git
-├── HospitalWaitTimesDiagnostic.R                    # Computes lateness metrics & quantities of interest
-│
-├── Documentation/
-│   ├── Codebook.md                                  # Variable descriptions and data types
-│   └── Documentation.md                             # Additional information about the code
-│
-└── Data Generation/
-    ├── Data_Generation_CodeGood_Sam_Dataset_Generation.R   # Generates Good_Sam_visits_Mid_Hospital.csv
-    └── UCSF_DataSet_Generation.R                           # Generates Dataset_Locked_UCSF - Patient Intake.csv
+- **Dataset_Locked_UCSF - Patient Intake.csv** — Patient intake dataset  
+- **Good_Sam_visits_Mid_Hospital.csv** — Hospital visit dataset  
+- **LICENSE** — Contains the MIT license  
+- **ShinyAppV4.R** — Interactive dashboard (Shiny App)  
+- **.gitignore** — Specifies files to ignore in Git  
+- **HospitalWaitTimesDiagnostic.R** — Computes lateness metrics and generates quantities of interest  
 
+**Documentation/**
+- **Codebook.md** — Describes all variables and data types used in the code  
+- **Documentation.md** — Contains additional information about the code  
+
+**Data Generation/**
+- **Data_Generation_CodeGood_Sam_Dataset_Generation.R** — Generates `Good_Sam_visits_Mid_Hospital.csv`  
+- **UCSF_DataSet_Generation.R** — Generates `Dataset_Locked_UCSF - Patient Intake.csv`
 ## ℹ️ How to use our code
 
 1. Collect appropriate data
