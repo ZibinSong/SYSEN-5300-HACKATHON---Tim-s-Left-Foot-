@@ -72,7 +72,7 @@ flowchart TD
                   style B fill:#fff,stroke:#333,stroke-width:3px
 ~~~
 
-Color legend: 
+Color Legend: 
 - Blue - hospital process steps
 - White - stored data
 - Pink - our code & tool
