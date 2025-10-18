@@ -1,5 +1,4 @@
-# SYSEN 5300 HACKATHON 
-# Group: Tim’s Left Foot
+# SYSEN 5300 HACKATHON - Group: Tim’s Left Foot
 
 Hackathon Competition – 10/17/2025 to 10/18/2025
 
