@@ -136,12 +136,9 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 | **late_min(data)** | Calculates how late caregivers are to check in on their patients, in units of minutes. The next expected timestamp is calculated by adding the time interval to the last recorded time check-in for a patient. The next actual timestamp is subtracted by the expected timestamp, and this difference is the number of minutes the caregiver is "late" to check-in on that patient.| `exp_time`, `late_by`|Adds a column of integers and datetime to the data|
 
 
-Further exposition on **interval_accuracy(data)**:
+Note:
 
-- check-in time (`timeIN`) is subtracted by the previous check-in time for a patient which indicates how many minutes off you are from the expected frequency interval --> `difference`
-- subtract the predetermined time interval of check-ins for that patient from this "difference" which tells us how much the actual time interval deviated from the expected time interval --> `interval_deviation`
-- normalize the `interval_deviation` by dividing by the expected time interval
-- if a caregiver is early, then they're not late and the `normalized_intervalDiff` will be negative. If this is the case, the `normalized_intervalDiff` will be set to 0
+If a caregiver is early then they're not late, and both `normalized_intervalDiff` and `late_by` will be negative. If this is the case, the `normalized_intervalDiff` and `late_by` will be reset to 0.
 
 
 ## Data Analysis - Jackson
