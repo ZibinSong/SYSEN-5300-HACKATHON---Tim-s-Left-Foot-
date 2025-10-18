@@ -149,7 +149,7 @@ The **SigmaView** application is an R Shiny dashboard designed for **Six Sigma P
 Key features include:
 * **Safe Data Loader**: The application uses robust functions (`apply_name_map` and `load_visits_one`) to read CSV files and automatically map common variations of column names (e.g., "Time In," "timestamp") to standard internal names (e.g., `Time_In`), preventing errors caused by mismatched headers.
 * **Core Metrics**: It runs the `Generate` pipeline to calculate `interval_deviation`, `normalized_intervalDiff`, and `late_by` for each patient visit, based on the **`Target_min`**.
-* **Process Violation Scoring **: The dashboard calculates group-level average deviation metrics and uses the four `*Problems` functions to identify groups (e.g., a specific employee or time of day) whose performance **exceeds user-defined raw and normalized thresholds** compared to the overall slice mean.
+* **Process Violation Scoring**: The dashboard calculates group-level average deviation metrics and uses the four `*Problems` functions to identify groups (e.g., a specific employee or time of day) whose performance **exceeds user-defined raw and normalized thresholds** compared to the overall slice mean.
 * **Interactive Dashboard**: The UI provides filters to slice data by **Hospital System**, **Time Shift**, **Severity**, **Wing**, **Date Range**, and the **Metric** of interest.
 * **Process Control Visualization**: The dashboard displays **Key Performance Indicators (KPIs)**, including the $\text{Cpk}$ (Process Capability Index), Lateness Rate, Mean/Standard Deviation, and an **X-bar Control Chart** to monitor the process mean over time and identify Out-of-Control (OOC) points ($\pm 3\sigma$).
 
