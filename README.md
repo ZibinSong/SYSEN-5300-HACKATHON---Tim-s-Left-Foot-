@@ -102,9 +102,8 @@ It also features 72 healthcare providers. The following schedule (Schedule 2 Med
 
 Furthermore, we also added a bias to the second data set. The following rules were implemented into the second data set in order to check our tool's accuracy and detection:
 - Employees DSW002 and MMW001 are always late for random between 12-18 minutes
-- Severity level (Healthcare Providers who serve for severity 5 have higher chance to be late by 6-12 minutes)
 - Wing (Medical Ward (MW) usually recieves late responses by 12-15 minutes) 
-- Time of day (from 4:00PM to 6:00PM, all employees have a higher chance to be late, up to max of 15 minutes) due to peak times
+- Time of day (from 4:00PM to 6:00PM, all employees have a higher chance to be late, up to max of 8 minutes) due to peak times
 
 Furthermore, we added a maximum possible delay of 25 minutes. 
 
@@ -129,18 +128,6 @@ Improved staff utilization rates.
 
 Increased patient satisfaction scores through better coverage.
 
-## 📁 Project Structure
-
-Show the layout of your repo for clarity:
-
-├── data/
-│   ├── hospital_big.csv
-│   ├── hospital_medium.csv
-├── scripts/
-│   ├── analysis.ipynb
-├── results/
-│   ├── wait_time_analysis.png
-├── README.md
 
 
 
