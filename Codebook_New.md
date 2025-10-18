@@ -43,8 +43,8 @@
 | `ShiftBucket`          | Factor            | Categorical variable representing employee shift (`0_8`, `8_16`, `16_24`).                         |
 | `Number_of_Visit`      | Integer           | Sequential counter representing the visit number per patient.                                      |
 | `modify1`              | Character         | Ensuring proper formatting so we can convert into a datetime datatype later                        |
-| `timeIN `              | Date              | Converts time information into a datetime datatype                                                 |
-| `prev_timeIN `         | Date              | Identifies the last check-in time for a patient                                                    |
+| `timeIN `              | POSIXct           | Converts time information into a datetime datatype                                                 |
+| `prev_timeIN `         | POSIXct           | Identifies the last check-in time for a patient                                                    |
 | `difference `          | Integer           | `timeIN` - `prev_timeIN`; indicates how many minutes off you are from the expected frequency interval|
 | `interval_deviation `  | Integer           | `difference` - `Target_min`; indicates the difference or deviation from the expected time interval (in minutes) |
 | `normalized_intervalDiff`| Integer          | `interval_deviation` / `Target_min`; normalizes `interval_deviation` to allow data comparison for different frequency intervals|
