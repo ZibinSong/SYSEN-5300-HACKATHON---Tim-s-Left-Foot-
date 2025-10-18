@@ -67,6 +67,32 @@ Shift buckets: "0_8" (0–7:59), "8_16" (8–15:59), "16_24" (16–23:59).
 
 - parse_time_hour(x): extracts integer hour (0–23) from numeric or string times.
 
+#### Shift bucketing:
+
+- to_bucket_from_bounds(h_start, h_end): maps start/end hours to "0_8", "8_16", or "16_24".
+
+- to_bucket_from_code(code): maps codes like M/D/N or morning/day/night to buckets.
+
+#### Roster building:
+
+- get_employee_roster_from_csv(employee_csv): reads employee CSV; derives bucketed ID lists using Time In/Out (falls back to synthetic IDs if needed).
+
+#### Utilities:
+
+- %||%: “null-or” operator.
+
+- pick(aliases, pool): chooses the first matching alias from a set.
+
+#### Scheduling:
+
+- make_schedule_plus_u12(start_dt, end_dt, target_min, allow_max_min=12): builds a series of scheduled Time_In timestamps per patient stay window.
+
+#### Sampling & attribution:
+
+- sample_emp(bucket): samples an Employee_ID from the bucket-specific roster.
+
+- extract_wing(emp_id): infers the two-letter wing from the last letters before trailing digits (e.g., "MDMW001" → "MW").
+
 ## Functions - Cami
 
 ## Functions in R
