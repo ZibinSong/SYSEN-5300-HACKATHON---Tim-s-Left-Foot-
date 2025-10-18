@@ -49,5 +49,5 @@
 | `interval_deviation `  | Integer           | `difference` - `Target_min`; indicates the difference or deviation from the expected time interval (in minutes) |
 | `normalized_intervalDiff| Integer          | `interval_deviation` / `Target_min`; normalizes `interval_deviation` to allow data comparison for different frequency intervals|
 | `exp_time`             | Date              | `prev_timeIN` + `Target_min`*60 ; expected timestamp for next check-in                             |
-| `late_by `             | Integer           | The difference (in minutes) from the expected time of check-in to actual check-in time             |
+| `late_by `             | Integer           | `timeIN` - `exp_time` ; the difference (in minutes) from the expected time of check-in to actual check-in time|
 
