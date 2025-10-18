@@ -131,20 +131,10 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 
 | Function(input) | Description | Variables | Output |
 |-----------|--------|-------------|----------|
-| **Libraries / Seed** | `library(tidyverse)`, `library(lubridate)`, `library(stringr)`, `set.seed(42)` | Loads essential R packages for data manipulation, date handling, and string processing; sets a fixed random seed for reproducibility. |
-| **Paths** | `INFILE_PATIENT`, `INFILE_EMPLOYEE`, `OUTFILE`, `ZIPFILE` | File path variables for input patient and employee data, output files, and compressed archives. |
-| **Policy Constants (see Parameters)** | `TARGET_MIN`, `ALLOW_MAX_MIN`, `ALWAYS_LATE_IDS`, `SEV5_LATE_RANGE`, `MW_LATE_RANGE`, `PM4_6_MAX`, `LATE_CAP` | Configuration constants controlling policy thresholds such as minimum targets, allowable delays, specific late ID lists, and late-time ranges or caps. |
-| **Intermediate Data Frames & Columns** | `raw0`, `raw`, `nm_norm`, `patients`, `visits`, `visits_out`, `roster` | Temporary or processed data tables created during pipeline execution, representing cleaned and transformed datasets. |
-| **Auto-Detected / Renamed Columns** | `Patient_ID`, `Room_Number`, `Severity`, `Date`, `Days`, `start_dt`, `stay_end`, `target_min`, `Time_In`, `Employee_ID`, `Wing`, `Late_Min`, `Time_In_Final`, `ShiftBucket`, etc. | Column names automatically recognized or standardized for consistency across datasets, used in later transformations or analysis. |
+| **adjustTime(data)** | adjusts the data type of the timestamps to enable us to subtract timestamps later on | 'variables','variables |adds a column to the data (where the timestamp is now datetime-type data insetad of a character string)|
+| **interval_accuracy(data)** | `INFILE_PATIENT`, `INFILE_EMPLOYEE`, `OUTFILE`, `ZIPFILE` | File path variables for input patient and employee data, output files, and compressed archives. |
+| **late_min(data)** | `TARGET_MIN`, `ALLOW_MAX_MIN`, `ALWAYS_LATE_IDS`, `SEV5_LATE_RANGE`, `MW_LATE_RANGE`, `PM4_6_MAX`, `LATE_CAP` | Configuration constants controlling policy thresholds such as minimum targets, allowable delays, specific late ID lists, and late-time ranges or caps. |
 
-
-### adjustTime(data)
-
-Input: data
-
-What it does: adjusts the data type of the timestamps to enable us to subtract timestamps later on
-
-Output: adds a column to the data where the dated, timestamp data is now datetime type data (instead of a character string)
 
 ### interval_accuracy(data)
 
