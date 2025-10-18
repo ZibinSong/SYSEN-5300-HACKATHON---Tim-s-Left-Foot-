@@ -141,8 +141,66 @@ Note:
 If a caregiver is early then they're not late, and both `normalized_intervalDiff` and `late_by` will be negative. If this is the case, the `normalized_intervalDiff` and `late_by` will be reset to 0.
 
 
-## Data Analysis - Jackson
-### Explanation of code:
 
 ## UI - Zibin & Qicheng
 ### Explanation of code:
+The **SigmaView** application is an R Shiny dashboard designed for **Six Sigma Process Control** of patient visit adherence. Its primary function is to safely load and combine patient visit data from multiple sources, standardize the data structure, calculate key process metrics (like deviation and lateness), and provide an interactive dashboard for performance monitoring.
+
+Key features include:
+* **Safe Data Loader**: The application uses robust functions (`apply_name_map` and `load_visits_one`) to read CSV files and automatically map common variations of column names (e.g., "Time In," "timestamp") to standard internal names (e.g., `Time_In`), preventing errors caused by mismatched headers.
+* **Core Metrics**: It runs the `Generate` pipeline to calculate `interval_deviation`, `normalized_intervalDiff`, and `late_by` for each patient visit, based on the **`Target_min`**.
+* **Interactive Dashboard**: The UI provides filters to slice data by **Hospital System**, **Time Shift**, **Severity**, **Wing**, **Date Range**, and the **Metric** of interest.
+* **Process Control Visualization**: The dashboard displays **Key Performance Indicators (KPIs)**, including the $\text{Cpk}$ (Process Capability Index), Lateness Rate, Mean/Standard Deviation, and an **X-bar Control Chart** to monitor the process mean over time and identify Out-of-Control (OOC) points ($\pm 3\sigma$).
+
+***
+
+### Variables
+
+| Category | Variables / Objects | Description |
+| :--- | :--- | :--- |
+| **Libraries** | `shiny`, `shinydashboard`, `plotly`, `DT`, `dplyr`, `tidyr`, `stringr`, `lubridate`, `readr` | Essential R packages for the dashboard UI, interactive plotting, dynamic tables, and data manipulation. |
+| **Paths** | `PATH_MED`, `PATH_UCSF`, `PATH_GOOD` | File paths to the three potential patient visit CSV files. |
+| **Data Frames** | `DATA` | The combined, pre-processed patient visit data from all available sources. |
+| | `base_visits()`, `filtered_visits()` | Reactive data frames in the Server: `base_visits()` applies the Hospital System filter; `filtered_visits()` applies all other filters (Date Range, Group, Metric). |
+| **Calculated Metrics** | `interval_deviation`, `normalized_intervalDiff`, `late_by` | Core process metrics calculated by the `Generate` pipeline (see **Functions - Cami**). |
+| | `timeIN_hr`, `shift`, `date` | Time-related columns derived from `timeIN_posix` for grouping and filtering. |
+| **KPI Metrics** | `mu`, `sdv`, `cpk`, `late_rate`, `avg_actual`, `ooc_n` | Mean, Standard Deviation, Process Capability Index, Lateness Rate (%), Average Actual Time, and number of Out-of-Control points. |
+| | `ucl`, `lcl` | Upper Control Limit and Lower Control Limit for the X-bar chart (typically $\mu \pm 3\sigma$). |
+
+***
+
+### Functions (Specific to the UI/Loader)
+
+| Function (Input) | Purpose |
+| :--- | :--- |
+| **`file_if_exists(p)`** | Helper: Returns the path `p` if the file exists, otherwise returns `NA`. |
+| **`apply_name_map(df, map)`** | **Robust Column Loader**: Renames existing column aliases (e.g., "Time In") in a data frame `df` to a set of standard names (e.g., `Time_In`). Ensures all standard columns exist, filling with `NA` if an alias isn't found. |
+| **`load_visits_one(path, label)`** | **Robust File Loader**: Reads one CSV, applies `apply_name_map`, handles missing `Patient_ID` by creating surrogates, runs the **`Generate`** pipeline, and adds source, shift, and date columns. |
+| **`cpk_calc(mu, sigma_s, usl=5, lsl=-5)`** | Calculates the **Process Capability Index ($\text{Cpk}$)** for the selected metric, assuming $USL=+5$ and $LSL=-5$ minutes as control limits for deviation. |
+
+***
+
+### Inputs (Filters & Controls)
+
+| UI Element Name | Location | Column Filtered | Description |
+| :--- | :--- | :--- | :--- |
+| **`file_choice`** | Sidebar | `source` | Selects which hospital system's data to analyze: MedSize, UCSF, Good Sam, or All Systems. |
+| **`primary_filter`** | Sidebar | **Grouping** | Chooses the primary variable for subgroup analysis: **Shift**, **Severity (1-5)**, or **Wing**. |
+| **`secondary_value`** | Sidebar | `shift`, `Severity`, or `Wing` | Selects a specific group to view (e.g., "Morning" shift or "Severity 3"). Choices are dynamically populated based on `primary_filter`. |
+| **`daterange`** | Sidebar | `date` | Sets the start and end dates for the analysis. |
+| **`metric_col`** | Sidebar | `interval_deviation`, `late_by`, or `normalized_intervalDiff` | Selects the metric to be used for KPI calculations and the Control Chart Y-axis. |
+
+***
+
+### Outputs (Dashboard Elements)
+
+| Output Name | Type | Section | Description |
+| :--- | :--- | :--- | :--- |
+| **`kpi_cpk`** | Text | KPIs | Process Capability Index: A measure of how capable the process is of meeting specifications (default $\pm 5$ min). |
+| **`kpi_late_rate`** | Text | KPIs | Percentage of visits where the **`late_by`** time is greater than 0 minutes. |
+| **`kpi_ooc`** | Text | KPIs | Count of live Out-of-Control (OOC) alerts, where individual metric values are outside $\mu \pm 3\sigma$. |
+| **`kpi_mean`**, **`kpi_sd`** | Text | KPIs | Mean ($\mu$) and Standard Deviation ($\sigma$) of the currently selected metric. |
+| **`kpi_avg_actual`** | Text | KPIs | Average actual interval time, calculated as `Target_min` + Mean of positive deviations. |
+| **`control_chart`** | Plotly | Chart | X-bar Control Chart: Plots the **Daily Mean** of the selected metric with Upper Control Limit (UCL), Lower Control Limit (LCL), and the overall Mean. |
+| **`exception_table`** | Data Table | Log | Logs the individual visit events that are flagged as Out-of-Control (OOC) on the $\pm 3\sigma$ chart. |
+| **`visits_table`** | Data Table | Preview | A complete, filtered preview of the underlying data set. |
