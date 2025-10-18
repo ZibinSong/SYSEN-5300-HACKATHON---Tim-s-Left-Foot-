@@ -129,6 +129,19 @@ Our tool will enable hospitals to easily collect and view their patients' wait t
 
 This dashboard tool will aid hospitals in performing root-cause analysis for their patient wait-time variability. This helps hospitals reduce patient wait-time variability and dissatisfaction, and track employee performance.
 
+## 🚀 Future improvements
+
+Although we are very proud of our final product, its only foolish to say that there are no improvments to be made. This section will provide some reference points for future possible improvements to our data.
+
+Future iterations of this project can integrate user satisfaction metrics by comparing perceived lateness with actual recorded wait times. This would help identify psychological or environmental factors—such as stress, patient expectations, or communication delays—that influence patients’ perception of care quality, even when staff performance meets objective standards.
+
+The system could also be improved by accepting additional parameters for data subsets, allowing users to isolate and analyze specific variables such as department, caregiver type, or time of day. This flexibility would enable hospitals to pinpoint the root causes of lateness patterns more effectively.
+
+Incorporating larger patient demographic datasets would further enhance the analysis by uncovering trends related to factors like age, day of the week, or medical condition severity. These insights could help hospitals tailor scheduling strategies to different patient groups for better efficiency and care outcomes.
+
+Finally, the dashboard could be expanded to include interactive filters, customizable alerts, and exportable performance reports. This would create a more dynamic and actionable interface for hospital management, enabling data-driven decisions and continuous improvement in caregiver responsiveness
+Automated Data Cleaning and Validation
+
 
 ## 📜 References
 
