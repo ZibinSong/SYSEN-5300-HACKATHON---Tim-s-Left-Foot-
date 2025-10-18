@@ -61,8 +61,6 @@ Caregivers (e.g. nurses and doctors) will have unique IDs that can scan into a p
 *Note: If a caregiver visits a patient early (where the actual time interval is less than the expected time interval), then there is no lateness and the difference between the actual and expected time will be considered to be 0. 
 
 
-Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for the hospital to review and address.  
-
 ~~~mermaid
 flowchart TD
     A(Patient checks into hospital) -->|records patient info, e.g. gender, DoB, Patient_ID, Severity, Room Number, expected frequency interval| B[Data]
@@ -94,6 +92,8 @@ Developed visual dashboards using Power BI or Matplotlib to track provider cover
 Proposed a predictive model for optimal staffing levels.
 
 ## 💻 Tools and Technologies
+
+Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for the hospital to review and address.  
 
 Languages: R
 
