@@ -109,6 +109,27 @@ Furthermore, we also added a bias to the second data set. The following rules we
 Furthermore, we added a maximum possible delay of 25 minutes. 
 
 
+## Functions in R
+
+### adjustTime(data)
+
+Input: data
+
+What it does: adjusts the dated, timestamp data to enable us to subtract timestamps later on
+
+Output: an additional column to the data where the dated, timestamp data is now datetime type data (instead of a character string)
+
+### interval_accuracy(data)
+
+Input: data
+
+What it does: produces the normalized time accuracy of the intervals between check-ins for a patient. For example, if a patient needs to be checked in on every 2 hours (2-hr intervals), this function indicates how close (how accurate) the actual time intervals are to 2 hours when a caregiver comes to check in on the patient. Because there are different frequencies, or time intervals between check-ins for different patients, this value is normalized. 
+
+Output: an additional column to the data that contains this normalized time accuracy data (integer)
+
+### late_min(data)
+stuffffffffff
+
 ## 💻 Tools and Technologies
 
 Our tool will enable hospitals to easily collect and view their patients' wait times by interacting with a user-friendly dashboard that displays the data as histograms based on different subgroups. When data exceeds [CONTROL LIMIT?], the data will be flagged and the dashboard will output a notification for a potential factor that causes lateness which the hospital can then review and address.  
