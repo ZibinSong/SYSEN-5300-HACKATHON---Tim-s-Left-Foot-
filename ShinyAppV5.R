@@ -8,7 +8,6 @@ suppressPackageStartupMessages({
 # ------------ Files ------------
 PATH_MED   <- "/cloud/project/MedSize_visits.csv"
 PATH_UCSF  <- "/cloud/project/patient_visits 7.csv"
-PATH_GOOD  <- "Good_Sam_visits_Mid_Hospital (2).csv"
 
 file_if_exists <- function(p) if (file.exists(p)) p else NA_character_
 
