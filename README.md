@@ -144,9 +144,14 @@ Show the layout of your repo for clarity:
 
 
 ## Transfer to Codebook
+
 late_min(data)
+
 Input: data
-What it does: Calcualtes how late caregivers are to check in on their patients, in units of minutes
+
+What it does: Calculates how late caregivers are to check in on their patients, in units of minutes. The next expected timestamp is calculated by adding the time interval to the last recorded time check-in for a patient. The next actual timestamp is subtracted by the expected timestamp, and this difference is the number of minutes the caregiver is "late" to check-in on that patient.
+
+Output: adds a column of integers to the data
 
 
 
