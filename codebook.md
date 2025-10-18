@@ -52,39 +52,19 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 
 ### Functions
 
-#### Name/parse helpers:
-
-- norm_names(x): trims, lowercases, and snake-cases header names.
-
-- parse_dt(x): robust datetime parser for several formats.
-
-- parse_time_hour(x): extracts integer hour (0–23) from numeric or string times.
-
-#### Shift bucketing:
-
-- to_bucket_from_bounds(h_start, h_end): maps start/end hours to "0_8", "8_16", or "16_24".
-
-- to_bucket_from_code(code): maps codes like M/D/N or morning/day/night to buckets.
-
-#### Roster building:
-
-- get_employee_roster_from_csv(employee_csv): reads employee CSV; derives bucketed ID lists using Time In/Out (falls back to synthetic IDs if needed).
-
-#### Utilities:
-
-- %||%: “null-or” operator.
-
-- pick(aliases, pool): chooses the first matching alias from a set.
-
-#### Scheduling:
-
-- make_schedule_plus_u12(start_dt, end_dt, target_min, allow_max_min=12): builds a series of scheduled Time_In timestamps per patient stay window.
-
-#### Sampling & attribution:
-
-- .sample_emp(bucket): samples an Employee_ID from the bucket-specific roster.
-
-- extract_wing(emp_id): infers the two-letter wing from the last letters before trailing digits (e.g., "MDMW001" → "MW").
+| Category | Function | Description |
+|-----------|-----------|-------------|
+| **Name / Parse Helpers** | `norm_names(x)` | Trims whitespace, converts text to lowercase, and converts headers to snake_case for consistent naming. |
+|  | `parse_dt(x)` | Robustly parses datetimes from multiple formats to standardize timestamps. |
+|  | `parse_time_hour(x)` | Extracts integer hour (0–23) from numeric or string time formats. |
+| **Shift Bucketing** | `to_bucket_from_bounds(h_start, h_end)` | Maps start and end hours to time buckets `"0_8"`, `"8_16"`, or `"16_24"`. |
+|  | `to_bucket_from_code(code)` | Converts code labels such as “M/D/N” or “morning/day/night” into their corresponding shift buckets. |
+| **Roster Building** | `get_employee_roster_from_csv(employee_csv)` | Reads the employee CSV file and creates bucketed employee ID lists using Time In/Out; falls back to synthetic IDs when data is missing. |
+| **Utilities** | `%||%` | “Null-or” operator — returns the left-hand value unless it’s null, otherwise returns the right-hand value. |
+|  | `pick(aliases, pool)` | Selects the first matching alias from a list of possible alternatives within a given pool. |
+| **Scheduling** | `make_schedule_plus_u12(start_dt, end_dt, target_min, allow_max_min=12)` | Generates scheduled `Time_In` timestamps for each patient stay, adding random per-step jitter up to 12 minutes. |
+| **Sampling & Attribution** | `.sample_emp(bucket)` | Randomly samples an `Employee_ID` from the roster corresponding to a given time bucket. |
+|  | `extract_wing(emp_id)` | Infers the two-letter hospital wing from the employee ID (e.g., `"MDMW001"` → `"MW"`). |
 
 ## Functions - Cami
 
