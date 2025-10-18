@@ -16,50 +16,6 @@ Hackathon Competition – 10/17/2025
 Hospitals require the coordination of many nurses and doctors on each floor for good communication and treatment of patients. However, in your hospital system, patients note wide and irregular gaps and how often nurses and doctors come to check on them during their inpatient care, impacting perceived and actual quality of treatment, and sometimes extending the stay of patients unnecessarily. Your hospital system has commissioned your team to develop a quality control system for tracking and mitigating wait times for inpatient care while on the hospital floor.
 
 
-
-## 🗂️ Data Set Explanation
-
-The following project includes 2 datasets based on real life hospitals.
-
-### 📘 Data Set 1: 
-The first hospital has an estimated 1100 patients per 10 days and is based on University of San Francisco (UCSF) Hospital. It includes four wings: 
-1. Surgical wing - SW 
-2. Medical Ward - MW 
-3. Maternity Ward - MATW 
-4. Recovery wing - RW 
-
-It also features 140 healthcare providers, of which are 40 doctors and 100 are nurses. The following schedule (Schedule 1 Big Hospital) is implemented for the healthcare providers: 
-
-- Morning Shift: 00:00:00 - 8:00:00
-    - 7 Healthcare providers Per Wing (28 Healthcare Providers on duty)
-- Day Shift: 8:00:00 - 16:00:00
-    - 14 Healthcare providers Per Wing (56 Healthcare Providers on duty)
-- Evening Shift: 16:00:00 - 24:00:00
-    - 14 Healthcare providers Per Wing (56 Healthcare Providers on duty)
-
-### 📘 Data Set 2: 
-The second hospital has an estimated 550 patients per 10 days and is based on Good Samaritan Hospital in San Jose, California. It includes four wings: 
-1. Surgical wing - SW 
-2. Medical Ward - MW
-3. Maternity Ward - MATW 
-4. Recovery wing - RW
-
-It also features 72 healthcare providers. The following schedule (Schedule 2 Medium Hospital) is implemented for the healthcare providers: 
-- Morning Shift: 00:00:00 - 8:00:00
-    - 4 Healthcare providers Per Wing (4 Healthcare Providers on duty)
-- Day Shift: 8:00:00 - 16:00:00
-    - 7 Healthcare provider Per Wing (7 Healthcare Providers on duty)
-- Evening Shift: 16:00:00 - 24:00:00
-    - 7 Healthcare providers Per Wing (7 Healthcare Providers on duty)
- 
-
-Furthermore, we also added a bias to the second data set. The following rules were implemented into the second data set in order to check the dashboards accuracy and detection:
-- Employee（DSW002, MMW001 always late for random between 12-18 minutes)
-- Severity level (Healthcare Providers who serve for severity 5 have higher chance to get late (6-12 minutes))
-- Wing (Medical Ward (MW) usually recieves late (12-15 minutes) responses) 
-- Time of day (during 4:00PM to 6PM, all employee have higher chance to be late, up to max. 15 minutes) due to peak times
-
-Furthermore, we added a maximum possible delay of 25 minutes. 
 ## 🎯 Objective
 
 The objective of this project is to design a diagnostic tool that monitors the wait times for inpatient care and identifies potential causes for caregiver "lateness" by using data-driven insights and predictive scheduling models. This will help hospitals understand their possible pain points that lead to irregular or wide gaps between caregiver check-ins that affect their patients' perceived quality of care and patient satisfaction.
@@ -107,6 +63,50 @@ flowchart TD
          style F fill:#f9f,stroke:#333,stroke-width:3px
                   style B fill:#fff,stroke:#333,stroke-width:3px
 ~~~
+
+## 🗂️ Data Set Explanation
+
+The following project includes 2 datasets based on real life hospitals.
+
+### 📘 Data Set 1: 
+The first hospital has an estimated 1100 patients per 10 days and is based on University of San Francisco (UCSF) Hospital. It includes four wings: 
+1. Surgical wing - SW 
+2. Medical Ward - MW 
+3. Maternity Ward - MATW 
+4. Recovery wing - RW 
+
+It also features 140 healthcare providers, of which are 40 doctors and 100 are nurses. The following schedule (Schedule 1 Big Hospital) is implemented for the healthcare providers: 
+
+- Morning Shift: 00:00:00 - 8:00:00
+    - 7 Healthcare providers Per Wing (28 Healthcare Providers on duty)
+- Day Shift: 8:00:00 - 16:00:00
+    - 14 Healthcare providers Per Wing (56 Healthcare Providers on duty)
+- Evening Shift: 16:00:00 - 24:00:00
+    - 14 Healthcare providers Per Wing (56 Healthcare Providers on duty)
+
+### 📘 Data Set 2: 
+The second hospital has an estimated 550 patients per 10 days and is based on Good Samaritan Hospital in San Jose, California. It includes four wings: 
+1. Surgical wing - SW 
+2. Medical Ward - MW
+3. Maternity Ward - MATW 
+4. Recovery wing - RW
+
+It also features 72 healthcare providers. The following schedule (Schedule 2 Medium Hospital) is implemented for the healthcare providers: 
+- Morning Shift: 00:00:00 - 8:00:00
+    - 4 Healthcare providers Per Wing (4 Healthcare Providers on duty)
+- Day Shift: 8:00:00 - 16:00:00
+    - 7 Healthcare provider Per Wing (7 Healthcare Providers on duty)
+- Evening Shift: 16:00:00 - 24:00:00
+    - 7 Healthcare providers Per Wing (7 Healthcare Providers on duty)
+ 
+
+Furthermore, we also added a bias to the second data set. The following rules were implemented into the second data set in order to check the dashboards accuracy and detection:
+- Employee（DSW002, MMW001 always late for random between 12-18 minutes)
+- Severity level (Healthcare Providers who serve for severity 5 have higher chance to get late (6-12 minutes))
+- Wing (Medical Ward (MW) usually recieves late (12-15 minutes) responses) 
+- Time of day (during 4:00PM to 6PM, all employee have higher chance to be late, up to max. 15 minutes) due to peak times
+
+Furthermore, we added a maximum possible delay of 25 minutes. 
 
 
 ## 💻 Tools and Technologies
