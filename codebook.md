@@ -129,6 +129,15 @@ The script generates a visits dataset from a patient-intake CSV and an employee-
 
 ## Functions - Cami
 
+| Function(input) | Description | Variables | Output |
+|-----------|--------|-------------|----------|
+| **Libraries / Seed** | `library(tidyverse)`, `library(lubridate)`, `library(stringr)`, `set.seed(42)` | Loads essential R packages for data manipulation, date handling, and string processing; sets a fixed random seed for reproducibility. |
+| **Paths** | `INFILE_PATIENT`, `INFILE_EMPLOYEE`, `OUTFILE`, `ZIPFILE` | File path variables for input patient and employee data, output files, and compressed archives. |
+| **Policy Constants (see Parameters)** | `TARGET_MIN`, `ALLOW_MAX_MIN`, `ALWAYS_LATE_IDS`, `SEV5_LATE_RANGE`, `MW_LATE_RANGE`, `PM4_6_MAX`, `LATE_CAP` | Configuration constants controlling policy thresholds such as minimum targets, allowable delays, specific late ID lists, and late-time ranges or caps. |
+| **Intermediate Data Frames & Columns** | `raw0`, `raw`, `nm_norm`, `patients`, `visits`, `visits_out`, `roster` | Temporary or processed data tables created during pipeline execution, representing cleaned and transformed datasets. |
+| **Auto-Detected / Renamed Columns** | `Patient_ID`, `Room_Number`, `Severity`, `Date`, `Days`, `start_dt`, `stay_end`, `target_min`, `Time_In`, `Employee_ID`, `Wing`, `Late_Min`, `Time_In_Final`, `ShiftBucket`, etc. | Column names automatically recognized or standardized for consistency across datasets, used in later transformations or analysis. |
+
+
 ### adjustTime(data)
 
 Input: data
