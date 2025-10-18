@@ -22,7 +22,7 @@ Hospitals require the coordination of many nurses and doctors on each floor for 
 
 The following project includes 2 datasets based on real life hospitals.
 
-### Data Set 1: 
+### 📘 Data Set 1: 
 The first hospital has an estimated 1100 patients per 10 days and is based on University of San Francisco (UCSF) Hospital. it includes four wings: 
 1. Surgical wing - SW 
 2. Medical Ward - MW 
@@ -36,7 +36,7 @@ Schedule 1 Big hospital:
 - Day Time: 8:00:00 - 16:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
 - Evening Time: 16:00:00 - 24:00:00 4 Doctors, 10 Nurses Per Wing (56 Healthcare Providers on duty)
 
-### Data Set 2: 
+### 📘 Data Set 2: 
 The second hospital has an estimated 550 patients per 10 days and is based on Good Samaritan Hospital in San Jose, California. it includes four wings: 
 1. Surgical wing - SW 
 2. Medical Ward - MW
