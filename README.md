@@ -97,6 +97,9 @@ It also features 140 healthcare providers, of which are 40 doctors and 100 are n
     - 14 Healthcare providers Per Wing (56 Healthcare Providers on duty)
 - Evening Shift: 16:00:00 - 24:00:00
     - 14 Healthcare providers Per Wing (56 Healthcare Providers on duty)
+ 
+  Note: It is also important to mention that the healthcare providers are only allowed to work in their shifts and overtime is not assumed.
+
 
 ### 📘 Data Set 2: 
 The second hospital has an estimated 550 patients per 10 days and is based on Good Samaritan Hospital in San Jose, California. It includes four wings: 
@@ -113,6 +116,7 @@ It also features 72 healthcare providers. The following schedule (Schedule 2 Med
 - Evening Shift: 16:00:00 - 24:00:00
     - 7 Healthcare providers Per Wing (7 Healthcare Providers on duty)
  
+Note: It is also important to mention that the healthcare providers are only allowed to work in their shifts and overtime is not assumed.
 
 Furthermore, we also added a bias to the second data set. The following rules were implemented into the second data set in order to check our tool's accuracy and detection:
 - Employees DSW002 and MMW001 are always late for random between 12-18 minutes
