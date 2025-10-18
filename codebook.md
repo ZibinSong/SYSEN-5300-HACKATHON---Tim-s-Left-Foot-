@@ -17,13 +17,25 @@
 The script generates a visits dataset from a patient-intake CSV and an employee-roster CSV. It builds scheduled visit times per patient based on triage severity, assigns employees constrained by shift windows, applies lateness mutations under several rules (then caps delay), and writes the final table to CSV and ZIP.
 
 ### Variables
+Library/seed: library(tidyverse), library(lubridate), library(stringr), set.seed(42).
+
+Paths: INFILE_PATIENT, INFILE_EMPLOYEE, OUTFILE, ZIPFILE
+
+Policy constants (see Parameters): TARGET_MIN, ALLOW_MAX_MIN, ALWAYS_LATE_IDS, SEV5_LATE_RANGE, MW_LATE_RANGE, PM4_6_MAX, LATE_CAP.
+
+Intermediate data frames & columns:
+raw0, raw, nm_norm, patients, visits, visits_out, roster.
+
+Auto-detected/renamed columns: Patient_ID, Room_Number, Severity, Date, Days, start_dt, stay_end, target_min, Time_In, Employee_ID, Wing, Late_Min, Time_In_Final, ShiftBucket, etc.
 ### Inputs
 Patient intake CSV: Dataset_MediumSized_Locked - Patient Intake.csv (required).
 Employee information CSV: Dataset_MediumSized_Locked - Employee Information.csv (optional—falls back to synthetic IDs if missing or malformed).
 
 Expected columns in the CSV file
 Patient: Patient_ID, Room_Number, Severity (or triage/level lookalikes), Date, Days (defaults to 3 if missing).
+
 Employee: Employee_ID, Time In, Time Out, optional Shift/Code.
+
 ### Parameters
 ### Functions
 
