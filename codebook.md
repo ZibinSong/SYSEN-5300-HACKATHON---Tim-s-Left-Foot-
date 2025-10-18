@@ -50,7 +50,6 @@ Functions:
 | **get_employee_roster_from_csv(employee_csv)**                          | Build bucketed Employee ID lists from Time In/Out (uses synthetic IDs if missing). |     |                                                         |
 | **rtrunc_minutes(n, allow_max_min, mean_frac, sd_frac)**                | Draw positive delay minutes from a truncated normal distribution.                  |     |                                                         |
 | **make_schedule_plus_u12(start_dt, end_dt, target_min, allow_max_min)** | Generate visit timestamps (start → end) with randomized jitter.                    |     |                                                         |
-| **%                                                                     |                                                                                    | %** | Null-or operator (returns `b` if `a` is missing/empty). |
 | **pick(aliases, pool)**                                                 | Select first matching column alias.                                                |     |                                                         |
 | **.sample_emp(bucket)**                                                 | Sample an `Employee_ID` from the bucket-specific roster.                           |     |      
 
