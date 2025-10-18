@@ -59,7 +59,7 @@ It also features 72 healthcare providers. The following schedule (Schedule 2 Med
 - Wing (Medical Ward (MW) usually recieves late (12-15 minutes) responses) 
 - Time of day (during 4:00PM to 6PM, all employee have higher chance to be late, up to max. 15 minutes) due to peak times
 
-
+Furthermore, we added a maximum possible delay of 25 minutes. 
 ## 🎯 Objective
 
 The objective of this project is to design a diagnostic tool that monitors the wait times for inpatient care and identifies potential causes for caregiver "lateness" by using data-driven insights and predictive scheduling models. This will help hospitals understand their possible pain points that lead to irregular or wide gaps between caregiver check-ins that affect their patients' perceived quality of care and patient satisfaction.
