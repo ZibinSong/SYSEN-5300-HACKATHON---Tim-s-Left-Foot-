@@ -2,6 +2,15 @@
 
 Hackathon Competition – 10/17/2025
 
+## 🧠 Team Members
+
+Zibin Song
+Jackson Kollmorgen
+Qicheng Fu
+Cami Chan
+Aras Ozdemir
+
+
 ## 🧩 Prompt
 
 (Keep what you wrote here — it’s clear and descriptive!)
@@ -62,13 +71,6 @@ Show the layout of your repo for clarity:
 │   ├── wait_time_analysis.png
 ├── README.md
 
-## 🧠 Team Members
-
-Tim Smith
-
-Aras Özdemir
-
-[Other teammates...]
 
 ## 📜 References
 
