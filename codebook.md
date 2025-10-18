@@ -11,6 +11,66 @@
 
 ## Data Set 1 - Qicheng
 ### Explanation of code:
+This script generates a sheet of patient visit by applying the patient-intake CSV and employee roster CSV, which includes multiple scheduled nurse visit based on triage severity(2-5), applying random lateness variation and assigning staff from the employee roster by the shift hours(3 shifts, morning, day, night). The generated dataset includes patient ID, room ID, severity level, total visit time, and assigned employee IDs. And finally output the file as CSV and ZIP.
+
+Variables: 
+| Category             | Variables / Objects                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Libraries / Seed** | `library(tidyverse)`, `library(lubridate)`, `library(stringr)`, `library(truncnorm)`, `set.seed(42)`                                   |
+| **Paths**            | `INFILE_PATIENT`, `INFILE_EMPLOYEE`, `OUTFILE`, `ZIPFILE`                                                                              |
+| **Policy Constants** | `TARGET_MIN`, `ALLOW_MAX_MIN`, `JITTER_MEAN_FRACTION`, `JITTER_SD_FRACTION`                                                            |
+| **Data Frames**      | `raw0`, `raw`, `nm_norm`, `patients`, `visits`, `visits_out`, `roster`                                                                 |
+| **Renamed Columns**  | `Patient_ID`, `Room_Number`, `Severity`, `Date`, `Days`, `start_dt`, `stay_end`, `target_min`, `Time_In`, `Employee_ID`, `ShiftBucket` |
+
+
+Input:
+| File                                                                             | Purpose                             | Required                               | Key Columns                                                                          |
+| -------------------------------------------------------------------------------- | ----------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Patient Intake CSV**<br>`Dataset_Locked_UCSF – Patient Intake.csv`             | Patient admission and severity info | ✅ Required                             | `Patient_ID`, `Room_Number`, `Severity` (or look-alikes), `Date`, `Days` (default 3) |
+| **Employee Information CSV**<br>`Dataset_Locked_UCSF – Employee Information.csv` | Nurse/employee roster with shifts   | ⚙️ Optional (fallback = synthetic IDs) | `Employee_ID`, `Time In`, `Time Out`, optional `Shift/Code` (`M/D/N`)                |
+| **Outputs**                                                                      | Generated visit dataset             | —                                      | `patient_visits.csv`, `patient_visits.zip`                                           |
+
+Parameters:
+| Parameter                | Description                                                                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| **TARGET_MIN**           | Visit cadence (minutes) by Severity: `2 = 30`, `3 = 60`, `4 = 90`, `5 = 120`. Severity 1 excluded.                           |
+| **ALLOW_MAX_MIN**        | Max allowed per-step jitter (12 min upper bound).                                                                            |
+| **JITTER_MEAN_FRACTION** | Mean = 50 % of range (≈ 6 min if allow = 12).                                                                                |
+| **JITTER_SD_FRACTION**   | SD = 25 % of range (≈ 3 min if allow = 12).                                                                                  |
+| **Shift Buckets**        | `"0_8"` (00–07:59), `"8_16"` (08–15:59), `"16_24"` (16–23:59). Employees sampled from matching bucket or `all_ids` fallback. |
+
+Functions:
+| Function                                                                | Purpose                                                                            |     |                                                         |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --- | ------------------------------------------------------- |
+| **.norm_names(x)**                                                      | Clean column names (trim, lowercase, snake-case).                                  |     |                                                         |
+| **parse_dt(x)**                                                         | Parse date/time strings to UTC `POSIXct`.                                          |     |                                                         |
+| **parse_time_hour(x)**                                                  | Extract hour (0–23) from numeric or text.                                          |     |                                                         |
+| **to_bucket_from_bounds(h_start, h_end)**                               | Map start/end hours to shift buckets `0_8`, `8_16`, `16_24`.                       |     |                                                         |
+| **to_bucket_from_code(code)**                                           | Convert shift codes (`M/D/N` or morning/day/night) to buckets.                     |     |                                                         |
+| **get_employee_roster_from_csv(employee_csv)**                          | Build bucketed Employee ID lists from Time In/Out (uses synthetic IDs if missing). |     |                                                         |
+| **rtrunc_minutes(n, allow_max_min, mean_frac, sd_frac)**                | Draw positive delay minutes from a truncated normal distribution.                  |     |                                                         |
+| **make_schedule_plus_u12(start_dt, end_dt, target_min, allow_max_min)** | Generate visit timestamps (start → end) with randomized jitter.                    |     |                                                         |
+| **%                                                                     |                                                                                    | %** | Null-or operator (returns `b` if `a` is missing/empty). |
+| **pick(aliases, pool)**                                                 | Select first matching column alias.                                                |     |                                                         |
+| **.sample_emp(bucket)**                                                 | Sample an `Employee_ID` from the bucket-specific roster.                           |     |      
+
+Output:
+| Column              | Description                                  |
+| ------------------- | -------------------------------------------- |
+| **Number_of_Visit** | Sequential visit count per patient.          |
+| **Room_Number**     | Room / bed identifier.                       |
+| **Patient_ID**      | Unique patient identifier.                   |
+| **Severity**        | Triage level (2–5).                          |
+| **Target_min**      | Target interval (minutes) for visit cadence. |
+| **Time_In**         | Scheduled visit timestamp (UTC).             |
+| **Employee_ID**     | Assigned nurse / staff ID.                   |
+
+Example: 
+| Number_of_Visit | Room_Number | Patient_ID | Severity | Target_min | Time_In             | Employee_ID |
+| --------------- | ----------- | ---------- | -------- | ---------- | ------------------- | ----------- |
+| 3               | A-203       | P000712    | 3        | 60         | 2025-10-18 09:47:31 | NUR014      |
+
+
 
 ## Data Set 2 - Aras
 ### Explanation of code:
