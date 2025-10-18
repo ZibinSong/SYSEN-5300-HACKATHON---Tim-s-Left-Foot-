@@ -1,6 +1,6 @@
 # SYSEN-5300-HACKATHON — Tim’s Left Foot
 
-Hackathon Competition – 10/17/2025
+Hackathon Competition – 10/17/2025 to 10/18/2025
 
 ## 🧠 Team Members
 
